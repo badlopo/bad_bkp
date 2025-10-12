@@ -69,7 +69,8 @@ class _SettingPageState extends State<SettingPage> {
               CupertinoListTile(
                 title: Text('Dark mode'),
                 trailing: CupertinoSwitch(
-                  value: bkpTheme.darkMode,
+                  value:
+                      CupertinoTheme.brightnessOf(context) == Brightness.dark,
                   onChanged: (v) => bkpTheme.darkMode = v,
                 ),
               ),

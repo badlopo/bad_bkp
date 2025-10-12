@@ -16,31 +16,35 @@ class _SettingPageState extends State<SettingPage> {
 
     final r = await showCupertinoModalPopup(
       context: context,
-      builder: (BuildContext context) => CupertinoActionSheet(
-        title: Text('Theme color'),
-        actions: [
-          for (final option in bkpThemeColors)
-            CupertinoActionSheetAction(
-              onPressed: () => Navigator.pop(context, option),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    option.name,
-                    style: TextStyle(color: option.color),
-                  ),
-                  if (current == option.color)
-                    Icon(
-                      CupertinoIcons.check_mark_circled,
-                      color: option.color,
+      builder: (BuildContext context) => ConstrainedBox(
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.6),
+        child: CupertinoActionSheet(
+          title: Text('Theme color'),
+          actions: [
+            for (final option in bkpThemeColors)
+              CupertinoActionSheetAction(
+                onPressed: () => Navigator.pop(context, option),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      option.name,
+                      style: TextStyle(color: option.color),
                     ),
-                ],
+                    if (current == option.color)
+                      Icon(
+                        CupertinoIcons.check_mark_circled,
+                        color: option.color,
+                      ),
+                  ],
+                ),
               ),
-            ),
-        ],
-        cancelButton: CupertinoActionSheetAction(
-          onPressed: () => Navigator.pop(context),
-          child: Text('Cancel'),
+          ],
+          cancelButton: CupertinoActionSheetAction(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
+          ),
         ),
       ),
     );
@@ -54,7 +58,7 @@ class _SettingPageState extends State<SettingPage> {
       navigationBar: CupertinoNavigationBar(middle: Text('Settings')),
       child: ListView(
         children: [
-          CupertinoListSection(
+          CupertinoFormSection.insetGrouped(
             header: Text('Preference'),
             children: [
               CupertinoListTile(
@@ -76,7 +80,7 @@ class _SettingPageState extends State<SettingPage> {
               ),
             ],
           ),
-          CupertinoListSection(
+          CupertinoFormSection.insetGrouped(
             header: Text('Storage'),
             children: [
               CupertinoListTile(
@@ -88,7 +92,7 @@ class _SettingPageState extends State<SettingPage> {
               ),
             ],
           ),
-          CupertinoListSection(
+          CupertinoFormSection.insetGrouped(
             header: Text('About'),
             children: [
               CupertinoListTile(

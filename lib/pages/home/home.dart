@@ -1,5 +1,5 @@
+import 'package:bookkeeping/pages/customs/customs.dart';
 import 'package:bookkeeping/pages/dashboard/dashboard.dart';
-import 'package:bookkeeping/pages/management/management.dart';
 import 'package:bookkeeping/pages/setting/setting.dart';
 import 'package:bookkeeping/pages/transaction/transaction.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,7 +24,7 @@ class HomePage extends StatelessWidget {
           ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.cube),
-            label: 'Management',
+            label: 'Customs',
           ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.gear),
@@ -35,7 +35,7 @@ class HomePage extends StatelessWidget {
       tabBuilder: (_, index) => const [
         DashboardPage(),
         TransactionPage(),
-        ManagementPage(),
+        CustomsPage(),
         SettingPage(),
       ][index],
     );

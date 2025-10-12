@@ -1,4 +1,3 @@
-import 'package:bookkeeping/db/database.dart';
 import 'package:bookkeeping/route/route.dart';
 import 'package:bookkeeping/services/theme.dart';
 import 'package:bookkeeping/utils/kv.dart';
@@ -9,8 +8,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await KVUtils.prelude();
-  BKPDatabase.prelude();
-
   bkpTheme.restore();
 
   runApp(const MyApp());

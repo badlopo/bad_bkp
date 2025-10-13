@@ -19,6 +19,8 @@ class LoadingIndicator extends StatelessWidget {
 }
 
 class EmptyIndicator extends StatelessWidget {
+  static final UnDraw _graph = UnDraw.noData(height: 128);
+
   final String? hint;
   final Widget? footer;
 
@@ -26,15 +28,13 @@ class EmptyIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (hint == null && footer == null) {
-      return Center(child: UnDraw.noData(width: 128));
-    }
+    if (hint == null && footer == null) return Center(child: _graph);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        UnDraw.noData(width: 128),
+        _graph,
         if (hint != null)
           Padding(
             padding: EdgeInsets.only(top: 24),

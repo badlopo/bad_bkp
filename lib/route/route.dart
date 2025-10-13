@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:bookkeeping/pages/customs/category/creation.dart';
 import 'package:bookkeeping/pages/home/home.dart';
 import 'package:bookkeeping/pages/misc/icon_picker.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:go_router/go_router.dart';
 
 abstract class RouteNames {
@@ -16,6 +17,7 @@ abstract class RouteNames {
 
 final router = GoRouter(
   initialLocation: '/home',
+  observers: [BotToastNavigatorObserver()],
   routes: [
     GoRoute(
       name: RouteNames.home,

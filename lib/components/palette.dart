@@ -25,7 +25,6 @@ class BKPPalette extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    CupertinoColors.destructiveRed;
     return Wrap(
       alignment: WrapAlignment.start,
       children: [
@@ -46,24 +45,6 @@ class BKPPalette extends StatelessWidget {
               ),
             ),
           ),
-        // SizedBox(
-        //   width: 44,
-        //   height: 44,
-        //   child: Center(
-        //     child: DecoratedBox(
-        //       decoration:
-        //           item == color ? _activeDecoration : _inactiveDecoration,
-        //       child: Padding(
-        //         padding: EdgeInsets.all(2),
-        //         child: Icon(
-        //           CupertinoIcons.circle_fill,
-        //           size: 36,
-        //           color: item.color,
-        //         ),
-        //       ),
-        //     ),
-        //   ),
-        // ),
       ],
     );
   }

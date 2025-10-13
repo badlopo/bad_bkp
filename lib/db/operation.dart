@@ -3,15 +3,18 @@ part of 'database.dart';
 extension CategoryExt on BKPDatabase {
   Future<void> createCategory({
     required String name,
+    required String description,
     required IconData icon,
     required Color color,
   }) async {
     await into(categories).insert(
       CategoriesCompanion.insert(
         name: name,
+        description: description,
         iconCodePoint: icon.codePoint,
         iconFontFamily: icon.fontFamily ?? '',
         iconFontPackage: icon.fontPackage ?? '',
+        // ignore: deprecated_member_use
         iconColor: color.value,
       ),
     );

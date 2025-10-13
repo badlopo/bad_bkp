@@ -1,5 +1,7 @@
+import 'package:bookkeeping/constants/tunnel.dart';
 import 'package:bookkeeping/pages/customs/category/category.dart';
 import 'package:bookkeeping/pages/customs/tag/tag.dart';
+import 'package:bookkeeping/utils/tunnel.dart';
 import 'package:flutter/cupertino.dart';
 
 const _animateDuration = Duration(milliseconds: 150);
@@ -15,40 +17,39 @@ class _CustomsPageTabBar extends StatelessWidget {
     required this.children,
   });
 
-  Iterable<Widget> _items() sync* {
-    for (final (index, label) in children.indexed) {
-      final active = index == this.index;
-
-      yield SizedBox(
-        height: 32,
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: GestureDetector(
-            onTap: () => onTap(index),
-            child: AnimatedDefaultTextStyle(
-              duration: _animateDuration,
-              style: active
-                  ? TextStyle(
-                      fontSize: 24,
-                      color: CupertinoColors.label,
-                      fontWeight: FontWeight.w500,
-                    )
-                  : TextStyle(
-                      fontSize: 18,
-                      color: CupertinoColors.secondaryLabel,
-                      fontWeight: FontWeight.w400,
-                    ),
-              child: Text(label),
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Row(spacing: 12, children: [..._items()]);
+    return Row(
+      spacing: 12,
+      children: [
+        for (final (index, label) in children.indexed)
+          SizedBox(
+            height: 32,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: GestureDetector(
+                onTap: () => onTap(index),
+                child: AnimatedDefaultTextStyle(
+                  duration: _animateDuration,
+                  style: index == this.index
+                      ? TextStyle(
+                          fontSize: 24,
+                          color: CupertinoColors.label.resolveFrom(context),
+                          fontWeight: FontWeight.w500,
+                        )
+                      : TextStyle(
+                          fontSize: 18,
+                          color: CupertinoColors.secondaryLabel
+                              .resolveFrom(context),
+                          fontWeight: FontWeight.w400,
+                        ),
+                  child: Text(label),
+                ),
+              ),
+            ),
+          )
+      ],
+    );
   }
 }
 
@@ -76,6 +77,15 @@ class _CustomsPageState extends State<CustomsPage> {
     );
   }
 
+  void handleTrailingAction() {
+    switch (tabIndex) {
+      case 0:
+        Tunnel(BKPTunnels.category).send(#create);
+      case 1:
+        Tunnel(BKPTunnels.tag).send(#create);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -86,6 +96,10 @@ class _CustomsPageState extends State<CustomsPage> {
           onTap: handleTabSwitch,
           children: ['Category', 'Tag'],
         ),
+        trailing: GestureDetector(
+          onTap: handleTrailingAction,
+          child: Icon(CupertinoIcons.add_circled_solid),
+        ),
       ),
       child: SafeArea(
         child: PageView(
@@ -94,7 +108,7 @@ class _CustomsPageState extends State<CustomsPage> {
           onPageChanged: (v) => setState(() {
             tabIndex = v;
           }),
-          children: [CategoryHomePage(), TagHomePage()],
+          children: const [CategoryHomePage(), TagHomePage()],
         ),
       ),
     );

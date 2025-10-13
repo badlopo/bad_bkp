@@ -27,8 +27,8 @@ class $CategoriesTable extends Categories
       const VerificationMeta('description');
   @override
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
-      'description', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+      'description', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _iconCodePointMeta =
       const VerificationMeta('iconCodePoint');
   @override
@@ -96,6 +96,8 @@ class $CategoriesTable extends Categories
           _descriptionMeta,
           description.isAcceptableOrUnknown(
               data['description']!, _descriptionMeta));
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
     }
     if (data.containsKey('icon_code_point')) {
       context.handle(
@@ -145,7 +147,7 @@ class $CategoriesTable extends Categories
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       description: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}description']),
+          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
       iconCodePoint: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}icon_code_point'])!,
       iconFontFamily: attachedDatabase.typeMapping.read(
@@ -168,7 +170,7 @@ class $CategoriesTable extends Categories
 class Category extends DataClass implements Insertable<Category> {
   final int id;
   final String name;
-  final String? description;
+  final String description;
   final int iconCodePoint;
   final String iconFontFamily;
   final String iconFontPackage;
@@ -177,7 +179,7 @@ class Category extends DataClass implements Insertable<Category> {
   const Category(
       {required this.id,
       required this.name,
-      this.description,
+      required this.description,
       required this.iconCodePoint,
       required this.iconFontFamily,
       required this.iconFontPackage,
@@ -188,9 +190,7 @@ class Category extends DataClass implements Insertable<Category> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
-    if (!nullToAbsent || description != null) {
-      map['description'] = Variable<String>(description);
-    }
+    map['description'] = Variable<String>(description);
     map['icon_code_point'] = Variable<int>(iconCodePoint);
     map['icon_font_family'] = Variable<String>(iconFontFamily);
     map['icon_font_package'] = Variable<String>(iconFontPackage);
@@ -203,9 +203,7 @@ class Category extends DataClass implements Insertable<Category> {
     return CategoriesCompanion(
       id: Value(id),
       name: Value(name),
-      description: description == null && nullToAbsent
-          ? const Value.absent()
-          : Value(description),
+      description: Value(description),
       iconCodePoint: Value(iconCodePoint),
       iconFontFamily: Value(iconFontFamily),
       iconFontPackage: Value(iconFontPackage),
@@ -220,7 +218,7 @@ class Category extends DataClass implements Insertable<Category> {
     return Category(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      description: serializer.fromJson<String?>(json['description']),
+      description: serializer.fromJson<String>(json['description']),
       iconCodePoint: serializer.fromJson<int>(json['iconCodePoint']),
       iconFontFamily: serializer.fromJson<String>(json['iconFontFamily']),
       iconFontPackage: serializer.fromJson<String>(json['iconFontPackage']),
@@ -234,7 +232,7 @@ class Category extends DataClass implements Insertable<Category> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
-      'description': serializer.toJson<String?>(description),
+      'description': serializer.toJson<String>(description),
       'iconCodePoint': serializer.toJson<int>(iconCodePoint),
       'iconFontFamily': serializer.toJson<String>(iconFontFamily),
       'iconFontPackage': serializer.toJson<String>(iconFontPackage),
@@ -246,7 +244,7 @@ class Category extends DataClass implements Insertable<Category> {
   Category copyWith(
           {int? id,
           String? name,
-          Value<String?> description = const Value.absent(),
+          String? description,
           int? iconCodePoint,
           String? iconFontFamily,
           String? iconFontPackage,
@@ -255,7 +253,7 @@ class Category extends DataClass implements Insertable<Category> {
       Category(
         id: id ?? this.id,
         name: name ?? this.name,
-        description: description.present ? description.value : this.description,
+        description: description ?? this.description,
         iconCodePoint: iconCodePoint ?? this.iconCodePoint,
         iconFontFamily: iconFontFamily ?? this.iconFontFamily,
         iconFontPackage: iconFontPackage ?? this.iconFontPackage,
@@ -317,7 +315,7 @@ class Category extends DataClass implements Insertable<Category> {
 class CategoriesCompanion extends UpdateCompanion<Category> {
   final Value<int> id;
   final Value<String> name;
-  final Value<String?> description;
+  final Value<String> description;
   final Value<int> iconCodePoint;
   final Value<String> iconFontFamily;
   final Value<String> iconFontPackage;
@@ -336,13 +334,14 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
   CategoriesCompanion.insert({
     this.id = const Value.absent(),
     required String name,
-    this.description = const Value.absent(),
+    required String description,
     required int iconCodePoint,
     required String iconFontFamily,
     required String iconFontPackage,
     required int iconColor,
     this.createdAt = const Value.absent(),
   })  : name = Value(name),
+        description = Value(description),
         iconCodePoint = Value(iconCodePoint),
         iconFontFamily = Value(iconFontFamily),
         iconFontPackage = Value(iconFontPackage),
@@ -372,7 +371,7 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
   CategoriesCompanion copyWith(
       {Value<int>? id,
       Value<String>? name,
-      Value<String?>? description,
+      Value<String>? description,
       Value<int>? iconCodePoint,
       Value<String>? iconFontFamily,
       Value<String>? iconFontPackage,
@@ -627,7 +626,7 @@ abstract class _$BKPDatabase extends GeneratedDatabase {
 typedef $$CategoriesTableCreateCompanionBuilder = CategoriesCompanion Function({
   Value<int> id,
   required String name,
-  Value<String?> description,
+  required String description,
   required int iconCodePoint,
   required String iconFontFamily,
   required String iconFontPackage,
@@ -637,7 +636,7 @@ typedef $$CategoriesTableCreateCompanionBuilder = CategoriesCompanion Function({
 typedef $$CategoriesTableUpdateCompanionBuilder = CategoriesCompanion Function({
   Value<int> id,
   Value<String> name,
-  Value<String?> description,
+  Value<String> description,
   Value<int> iconCodePoint,
   Value<String> iconFontFamily,
   Value<String> iconFontPackage,
@@ -777,7 +776,7 @@ class $$CategoriesTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> name = const Value.absent(),
-            Value<String?> description = const Value.absent(),
+            Value<String> description = const Value.absent(),
             Value<int> iconCodePoint = const Value.absent(),
             Value<String> iconFontFamily = const Value.absent(),
             Value<String> iconFontPackage = const Value.absent(),
@@ -797,7 +796,7 @@ class $$CategoriesTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String name,
-            Value<String?> description = const Value.absent(),
+            required String description,
             required int iconCodePoint,
             required String iconFontFamily,
             required String iconFontPackage,

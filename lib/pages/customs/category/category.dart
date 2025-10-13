@@ -1,8 +1,10 @@
 import 'package:bookkeeping/components/indicator.dart';
 import 'package:bookkeeping/components/refreshable.dart';
+import 'package:bookkeeping/constants/tunnel.dart';
 import 'package:bookkeeping/db/database.dart';
 import 'package:bookkeeping/route/route.dart';
 import 'package:bookkeeping/utils/toast.dart';
+import 'package:bookkeeping/utils/tunnel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
@@ -14,9 +16,19 @@ class CategoryHomePage extends StatefulWidget {
 }
 
 class _CategoryHomePageState extends State<CategoryHomePage>
-    with AutomaticKeepAliveClientMixin {
+    with
+        AutomaticKeepAliveClientMixin,
+        SingleTunnelListenerMixin<CategoryHomePage, Symbol> {
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  TunnelIdentifier get tunnelName => BKPTunnels.category;
+
+  @override
+  void onTunnelEvent(Symbol event) {
+    if (event == #create) handleCategoryCreation();
+  }
 
   int page = 1;
   bool isEnd = false;
@@ -68,11 +80,15 @@ class _CategoryHomePageState extends State<CategoryHomePage>
     final list = categories;
 
     if (list == null) {
-      return CupertinoPageScaffold(child: LoadingIndicator());
+      return CupertinoPageScaffold(
+        resizeToAvoidBottomInset: false,
+        child: LoadingIndicator(),
+      );
     }
 
     if (list.isEmpty) {
       return CupertinoPageScaffold(
+        resizeToAvoidBottomInset: false,
         child: EmptyIndicator(
           hint: 'No data',
           footer: Padding(
@@ -96,6 +112,9 @@ class _CategoryHomePageState extends State<CategoryHomePage>
             final category = list[index];
             return CupertinoListTile(
               title: Text(category.name),
+              subtitle: category.description.isEmpty
+                  ? null
+                  : Text(category.description),
               leading: Icon(
                 IconData(
                   category.iconCodePoint,

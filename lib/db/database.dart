@@ -1,8 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/cupertino.dart' hide Table;
-import 'package:flutter_iconpicker/IconPicker/Packs/Cupertino.dart';
-import 'package:flutter_iconpicker/Models/icon_picker_icon.dart';
 import 'package:path_provider/path_provider.dart';
 
 part 'database.g.dart';
@@ -17,7 +15,7 @@ class Categories extends Table {
 
   TextColumn get name => text()();
 
-  TextColumn get description => text().nullable()();
+  TextColumn get description => text()();
 
   IntColumn get iconCodePoint => integer()();
 

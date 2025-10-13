@@ -29,7 +29,7 @@ class BKPPalette extends StatelessWidget {
     return Wrap(
       alignment: WrapAlignment.start,
       children: [
-        for (final item in BKPColor.all)
+        for (final item in bkpColors)
           GestureDetector(
             onTap: () => _onTap(item),
             child: Container(

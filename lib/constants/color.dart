@@ -1,27 +1,11 @@
 import 'package:flutter/cupertino.dart';
 
 class BKPColor {
-  static const List<BKPColor> all = [
-    BKPColor.blue(),
-    BKPColor.green(),
-    BKPColor.mint(),
-    BKPColor.indigo(),
-    BKPColor.orange(),
-    BKPColor.pink(),
-    BKPColor.brown(),
-    BKPColor.purple(),
-    BKPColor.red(),
-    BKPColor.teal(),
-    BKPColor.cyan(),
-    BKPColor.yellow(),
-    BKPColor.grey(),
-  ];
-
-  static BKPColor findByName(String name) {
-    for (final item in all) {
+  static BKPColor fromName(String name) {
+    for (final item in bkpColors) {
       if (item.name == name) return item;
     }
-    return all[0];
+    return bkpColors[0];
   }
 
   final String name;
@@ -95,3 +79,19 @@ class BKPColor {
   @override
   int get hashCode => Object.hash(name, color);
 }
+
+const bkpColors = [
+  BKPColor.blue(),
+  BKPColor.green(),
+  BKPColor.mint(),
+  BKPColor.indigo(),
+  BKPColor.orange(),
+  BKPColor.pink(),
+  BKPColor.brown(),
+  BKPColor.purple(),
+  BKPColor.red(),
+  BKPColor.teal(),
+  BKPColor.cyan(),
+  BKPColor.yellow(),
+  BKPColor.grey(),
+];

@@ -1,23 +1,6 @@
+import 'package:bookkeeping/constants/color.dart';
 import 'package:bookkeeping/utils/kv.dart';
 import 'package:flutter/cupertino.dart';
-
-typedef BKPThemeColor = ({String name, Color color});
-
-const bkpThemeColors = <BKPThemeColor>[
-  (name: 'Blue', color: CupertinoColors.systemBlue),
-  (name: 'Green', color: CupertinoColors.systemGreen),
-  (name: 'Mint', color: CupertinoColors.systemMint),
-  (name: 'Indigo', color: CupertinoColors.systemIndigo),
-  (name: 'Orange', color: CupertinoColors.systemOrange),
-  (name: 'Pink', color: CupertinoColors.systemPink),
-  (name: 'Brown', color: CupertinoColors.systemBrown),
-  (name: 'Purple', color: CupertinoColors.systemPurple),
-  (name: 'Red', color: CupertinoColors.systemRed),
-  (name: 'Teal', color: CupertinoColors.systemTeal),
-  (name: 'Cyan', color: CupertinoColors.systemCyan),
-  (name: 'Yellow', color: CupertinoColors.systemYellow),
-  (name: 'Grey', color: CupertinoColors.systemGrey),
-];
 
 class _BKPTheme extends ChangeNotifier {
   bool _darkMode = false;
@@ -30,11 +13,11 @@ class _BKPTheme extends ChangeNotifier {
     notifyListeners();
   }
 
-  BKPThemeColor _themeColor = bkpThemeColors[0];
+  BKPColor _themeColor = bkpColors[0];
 
-  BKPThemeColor get themeColor => _themeColor;
+  BKPColor get themeColor => _themeColor;
 
-  set themeColor(BKPThemeColor v) {
+  set themeColor(BKPColor v) {
     _themeColor = v;
     save();
     notifyListeners();
@@ -55,10 +38,7 @@ extension BKPThemeExt on _BKPTheme {
     if (theme == null) return;
 
     _darkMode = theme['darkMode'];
-    _themeColor = bkpThemeColors.firstWhere(
-      (v) => v.name == theme['themeColorName'],
-      orElse: () => bkpThemeColors[0],
-    );
+    _themeColor = BKPColor.fromName(theme['themeColorName']);
   }
 }
 

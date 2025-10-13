@@ -1,3 +1,4 @@
+import 'package:bookkeeping/constants/color.dart';
 import 'package:bookkeeping/services/theme.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -22,7 +23,7 @@ class _SettingPageState extends State<SettingPage> {
         child: CupertinoActionSheet(
           title: Text('Theme color'),
           actions: [
-            for (final option in bkpThemeColors)
+            for (final option in bkpColors)
               CupertinoActionSheetAction(
                 onPressed: () => Navigator.pop(context, option),
                 child: Row(

@@ -96,9 +96,10 @@ class _CustomsPageState extends State<CustomsPage> {
           onTap: handleTabSwitch,
           children: ['Category', 'Tag'],
         ),
-        trailing: GestureDetector(
-          onTap: handleTrailingAction,
-          child: Icon(CupertinoIcons.add_circled_solid),
+        trailing: CupertinoButton(
+          padding: EdgeInsets.zero,
+          onPressed: handleTrailingAction,
+          child: Text('New'),
         ),
       ),
       child: SafeArea(

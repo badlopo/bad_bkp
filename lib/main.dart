@@ -3,9 +3,15 @@ import 'package:bookkeeping/services/theme.dart';
 import 'package:bookkeeping/utils/kv.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: CupertinoColors.transparent,
+    systemNavigationBarColor: CupertinoColors.transparent,
+  ));
 
   await KVUtils.prelude();
   bkpTheme.restore();
@@ -16,12 +22,12 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: bkpTheme,
       builder: (context, child) => CupertinoApp.router(
+        title: 'BKP',
         theme: CupertinoThemeData(
           brightness: bkpTheme.darkMode ? Brightness.dark : Brightness.light,
           primaryColor: bkpTheme.themeColor.color,

@@ -27,3 +27,15 @@ extension CategoryExt on BKPDatabase {
     return query.get();
   }
 }
+
+extension TagExt on BKPDatabase {
+  Future<void> createTag(String name) async {
+    await into(tags).insert(TagsCompanion.insert(name: name));
+  }
+
+  Future<List<Tag>> getTags({int pageNo = 1, int pageSize = 20}) {
+    final query = select(tags)
+      ..limit(pageSize, offset: (pageNo - 1) * pageSize);
+    return query.get();
+  }
+}

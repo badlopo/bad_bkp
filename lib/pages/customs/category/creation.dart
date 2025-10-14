@@ -1,5 +1,6 @@
 import 'package:bookkeeping/components/palette.dart';
 import 'package:bookkeeping/constants/color.dart';
+import 'package:bookkeeping/constants/constraint.dart';
 import 'package:bookkeeping/constants/icon.dart';
 import 'package:bookkeeping/db/database.dart';
 import 'package:bookkeeping/route/route.dart';
@@ -19,7 +20,7 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
 
   String name = '';
   String description = '';
-  BKPIcon icon = (name: 'collections', icon: CupertinoIcons.collections);
+  IconData icon = CupertinoIcons.collections;
   BKPColor color = BKPColor.blue();
 
   void handleIconSelection() async {
@@ -30,7 +31,7 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
 
     if (newIcon != null) {
       setState(() {
-        icon = newIcon;
+        icon = newIcon.icon;
       });
     }
   }
@@ -49,7 +50,7 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
         await BKPDatabase.instance.createCategory(
           name: name,
           description: description,
-          icon: icon.icon,
+          icon: icon,
           color: color,
         );
       });
@@ -93,7 +94,7 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
                   textInputAction: TextInputAction.next,
                   textAlign: TextAlign.end,
                   autofocus: true,
-                  maxLength: 10,
+                  maxLength: BKPConstraints.categoryNameMaxLength,
                   prefix: Text('Name'),
                   validator: (v) => v?.isNotEmpty == true ? null : 'Required',
                   onSaved: (v) => name = v!,
@@ -101,7 +102,7 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
                 CupertinoTextFormFieldRow(
                   textInputAction: TextInputAction.done,
                   textAlign: TextAlign.end,
-                  maxLength: 20,
+                  maxLength: BKPConstraints.categoryDescriptionMaxLength,
                   prefix: Text('Description'),
                   onSaved: (v) => description = v!,
                 ),
@@ -113,7 +114,7 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
               children: [
                 CupertinoListTile(
                   title: Text('Icon'),
-                  additionalInfo: Icon(icon.icon, color: color.color),
+                  additionalInfo: Icon(icon, color: color.color),
                   trailing: CupertinoListTileChevron(),
                   onTap: handleIconSelection,
                 ),

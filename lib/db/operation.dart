@@ -23,6 +23,29 @@ extension CategoryExt on BKPDatabase {
       ..orderBy([(r) => OrderingTerm.desc(r.createdAt)]);
     return query.get();
   }
+
+  Future<void> updateCategory(
+    int id, {
+    required String name,
+    required String description,
+    required IconData icon,
+    required BKPColor color,
+  }) async {
+    final target = update(categories)..where((r) => r.id.equals(id));
+    await target.write(
+      CategoriesCompanion.insert(
+        name: name,
+        description: description,
+        icon: icon,
+        color: color,
+      ),
+    );
+  }
+
+  Future<void> deleteCategory(int id) async {
+    final target = delete(categories)..where((r) => r.id.equals(id));
+    await target.go();
+  }
 }
 
 extension TagExt on BKPDatabase {

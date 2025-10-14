@@ -29,30 +29,16 @@ class $CategoriesTable extends Categories
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
       'description', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _iconCodePointMeta =
-      const VerificationMeta('iconCodePoint');
   @override
-  late final GeneratedColumn<int> iconCodePoint = GeneratedColumn<int>(
-      'icon_code_point', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _iconFontFamilyMeta =
-      const VerificationMeta('iconFontFamily');
+  late final GeneratedColumnWithTypeConverter<IconData, String> icon =
+      GeneratedColumn<String>('icon', aliasedName, false,
+              type: DriftSqlType.string, requiredDuringInsert: true)
+          .withConverter<IconData>($CategoriesTable.$convertericon);
   @override
-  late final GeneratedColumn<String> iconFontFamily = GeneratedColumn<String>(
-      'icon_font_family', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _iconFontPackageMeta =
-      const VerificationMeta('iconFontPackage');
-  @override
-  late final GeneratedColumn<String> iconFontPackage = GeneratedColumn<String>(
-      'icon_font_package', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _iconColorMeta =
-      const VerificationMeta('iconColor');
-  @override
-  late final GeneratedColumn<int> iconColor = GeneratedColumn<int>(
-      'icon_color', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumnWithTypeConverter<BKPColor, String> color =
+      GeneratedColumn<String>('color', aliasedName, false,
+              type: DriftSqlType.string, requiredDuringInsert: true)
+          .withConverter<BKPColor>($CategoriesTable.$convertercolor);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -62,16 +48,8 @@ class $CategoriesTable extends Categories
       requiredDuringInsert: false,
       defaultValue: currentDateAndTime);
   @override
-  List<GeneratedColumn> get $columns => [
-        id,
-        name,
-        description,
-        iconCodePoint,
-        iconFontFamily,
-        iconFontPackage,
-        iconColor,
-        createdAt
-      ];
+  List<GeneratedColumn> get $columns =>
+      [id, name, description, icon, color, createdAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -99,36 +77,6 @@ class $CategoriesTable extends Categories
     } else if (isInserting) {
       context.missing(_descriptionMeta);
     }
-    if (data.containsKey('icon_code_point')) {
-      context.handle(
-          _iconCodePointMeta,
-          iconCodePoint.isAcceptableOrUnknown(
-              data['icon_code_point']!, _iconCodePointMeta));
-    } else if (isInserting) {
-      context.missing(_iconCodePointMeta);
-    }
-    if (data.containsKey('icon_font_family')) {
-      context.handle(
-          _iconFontFamilyMeta,
-          iconFontFamily.isAcceptableOrUnknown(
-              data['icon_font_family']!, _iconFontFamilyMeta));
-    } else if (isInserting) {
-      context.missing(_iconFontFamilyMeta);
-    }
-    if (data.containsKey('icon_font_package')) {
-      context.handle(
-          _iconFontPackageMeta,
-          iconFontPackage.isAcceptableOrUnknown(
-              data['icon_font_package']!, _iconFontPackageMeta));
-    } else if (isInserting) {
-      context.missing(_iconFontPackageMeta);
-    }
-    if (data.containsKey('icon_color')) {
-      context.handle(_iconColorMeta,
-          iconColor.isAcceptableOrUnknown(data['icon_color']!, _iconColorMeta));
-    } else if (isInserting) {
-      context.missing(_iconColorMeta);
-    }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
@@ -148,14 +96,11 @@ class $CategoriesTable extends Categories
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       description: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
-      iconCodePoint: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}icon_code_point'])!,
-      iconFontFamily: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}icon_font_family'])!,
-      iconFontPackage: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}icon_font_package'])!,
-      iconColor: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}icon_color'])!,
+      icon: $CategoriesTable.$convertericon.fromSql(attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}icon'])!),
+      color: $CategoriesTable.$convertercolor.fromSql(attachedDatabase
+          .typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}color'])!),
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
     );
@@ -165,25 +110,26 @@ class $CategoriesTable extends Categories
   $CategoriesTable createAlias(String alias) {
     return $CategoriesTable(attachedDatabase, alias);
   }
+
+  static TypeConverter<IconData, String> $convertericon =
+      const IconDataConverter();
+  static TypeConverter<BKPColor, String> $convertercolor =
+      const BKPColorConverter();
 }
 
 class Category extends DataClass implements Insertable<Category> {
   final int id;
   final String name;
   final String description;
-  final int iconCodePoint;
-  final String iconFontFamily;
-  final String iconFontPackage;
-  final int iconColor;
+  final IconData icon;
+  final BKPColor color;
   final DateTime createdAt;
   const Category(
       {required this.id,
       required this.name,
       required this.description,
-      required this.iconCodePoint,
-      required this.iconFontFamily,
-      required this.iconFontPackage,
-      required this.iconColor,
+      required this.icon,
+      required this.color,
       required this.createdAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -191,10 +137,14 @@ class Category extends DataClass implements Insertable<Category> {
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
     map['description'] = Variable<String>(description);
-    map['icon_code_point'] = Variable<int>(iconCodePoint);
-    map['icon_font_family'] = Variable<String>(iconFontFamily);
-    map['icon_font_package'] = Variable<String>(iconFontPackage);
-    map['icon_color'] = Variable<int>(iconColor);
+    {
+      map['icon'] =
+          Variable<String>($CategoriesTable.$convertericon.toSql(icon));
+    }
+    {
+      map['color'] =
+          Variable<String>($CategoriesTable.$convertercolor.toSql(color));
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -204,10 +154,8 @@ class Category extends DataClass implements Insertable<Category> {
       id: Value(id),
       name: Value(name),
       description: Value(description),
-      iconCodePoint: Value(iconCodePoint),
-      iconFontFamily: Value(iconFontFamily),
-      iconFontPackage: Value(iconFontPackage),
-      iconColor: Value(iconColor),
+      icon: Value(icon),
+      color: Value(color),
       createdAt: Value(createdAt),
     );
   }
@@ -219,10 +167,8 @@ class Category extends DataClass implements Insertable<Category> {
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String>(json['description']),
-      iconCodePoint: serializer.fromJson<int>(json['iconCodePoint']),
-      iconFontFamily: serializer.fromJson<String>(json['iconFontFamily']),
-      iconFontPackage: serializer.fromJson<String>(json['iconFontPackage']),
-      iconColor: serializer.fromJson<int>(json['iconColor']),
+      icon: serializer.fromJson<IconData>(json['icon']),
+      color: serializer.fromJson<BKPColor>(json['color']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -233,10 +179,8 @@ class Category extends DataClass implements Insertable<Category> {
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String>(description),
-      'iconCodePoint': serializer.toJson<int>(iconCodePoint),
-      'iconFontFamily': serializer.toJson<String>(iconFontFamily),
-      'iconFontPackage': serializer.toJson<String>(iconFontPackage),
-      'iconColor': serializer.toJson<int>(iconColor),
+      'icon': serializer.toJson<IconData>(icon),
+      'color': serializer.toJson<BKPColor>(color),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -245,19 +189,15 @@ class Category extends DataClass implements Insertable<Category> {
           {int? id,
           String? name,
           String? description,
-          int? iconCodePoint,
-          String? iconFontFamily,
-          String? iconFontPackage,
-          int? iconColor,
+          IconData? icon,
+          BKPColor? color,
           DateTime? createdAt}) =>
       Category(
         id: id ?? this.id,
         name: name ?? this.name,
         description: description ?? this.description,
-        iconCodePoint: iconCodePoint ?? this.iconCodePoint,
-        iconFontFamily: iconFontFamily ?? this.iconFontFamily,
-        iconFontPackage: iconFontPackage ?? this.iconFontPackage,
-        iconColor: iconColor ?? this.iconColor,
+        icon: icon ?? this.icon,
+        color: color ?? this.color,
         createdAt: createdAt ?? this.createdAt,
       );
   Category copyWithCompanion(CategoriesCompanion data) {
@@ -266,16 +206,8 @@ class Category extends DataClass implements Insertable<Category> {
       name: data.name.present ? data.name.value : this.name,
       description:
           data.description.present ? data.description.value : this.description,
-      iconCodePoint: data.iconCodePoint.present
-          ? data.iconCodePoint.value
-          : this.iconCodePoint,
-      iconFontFamily: data.iconFontFamily.present
-          ? data.iconFontFamily.value
-          : this.iconFontFamily,
-      iconFontPackage: data.iconFontPackage.present
-          ? data.iconFontPackage.value
-          : this.iconFontPackage,
-      iconColor: data.iconColor.present ? data.iconColor.value : this.iconColor,
+      icon: data.icon.present ? data.icon.value : this.icon,
+      color: data.color.present ? data.color.value : this.color,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -286,18 +218,16 @@ class Category extends DataClass implements Insertable<Category> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
-          ..write('iconCodePoint: $iconCodePoint, ')
-          ..write('iconFontFamily: $iconFontFamily, ')
-          ..write('iconFontPackage: $iconFontPackage, ')
-          ..write('iconColor: $iconColor, ')
+          ..write('icon: $icon, ')
+          ..write('color: $color, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, description, iconCodePoint,
-      iconFontFamily, iconFontPackage, iconColor, createdAt);
+  int get hashCode =>
+      Object.hash(id, name, description, icon, color, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -305,10 +235,8 @@ class Category extends DataClass implements Insertable<Category> {
           other.id == this.id &&
           other.name == this.name &&
           other.description == this.description &&
-          other.iconCodePoint == this.iconCodePoint &&
-          other.iconFontFamily == this.iconFontFamily &&
-          other.iconFontPackage == this.iconFontPackage &&
-          other.iconColor == this.iconColor &&
+          other.icon == this.icon &&
+          other.color == this.color &&
           other.createdAt == this.createdAt);
 }
 
@@ -316,54 +244,42 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
   final Value<int> id;
   final Value<String> name;
   final Value<String> description;
-  final Value<int> iconCodePoint;
-  final Value<String> iconFontFamily;
-  final Value<String> iconFontPackage;
-  final Value<int> iconColor;
+  final Value<IconData> icon;
+  final Value<BKPColor> color;
   final Value<DateTime> createdAt;
   const CategoriesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.description = const Value.absent(),
-    this.iconCodePoint = const Value.absent(),
-    this.iconFontFamily = const Value.absent(),
-    this.iconFontPackage = const Value.absent(),
-    this.iconColor = const Value.absent(),
+    this.icon = const Value.absent(),
+    this.color = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   CategoriesCompanion.insert({
     this.id = const Value.absent(),
     required String name,
     required String description,
-    required int iconCodePoint,
-    required String iconFontFamily,
-    required String iconFontPackage,
-    required int iconColor,
+    required IconData icon,
+    required BKPColor color,
     this.createdAt = const Value.absent(),
   })  : name = Value(name),
         description = Value(description),
-        iconCodePoint = Value(iconCodePoint),
-        iconFontFamily = Value(iconFontFamily),
-        iconFontPackage = Value(iconFontPackage),
-        iconColor = Value(iconColor);
+        icon = Value(icon),
+        color = Value(color);
   static Insertable<Category> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? description,
-    Expression<int>? iconCodePoint,
-    Expression<String>? iconFontFamily,
-    Expression<String>? iconFontPackage,
-    Expression<int>? iconColor,
+    Expression<String>? icon,
+    Expression<String>? color,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (description != null) 'description': description,
-      if (iconCodePoint != null) 'icon_code_point': iconCodePoint,
-      if (iconFontFamily != null) 'icon_font_family': iconFontFamily,
-      if (iconFontPackage != null) 'icon_font_package': iconFontPackage,
-      if (iconColor != null) 'icon_color': iconColor,
+      if (icon != null) 'icon': icon,
+      if (color != null) 'color': color,
       if (createdAt != null) 'created_at': createdAt,
     });
   }
@@ -372,19 +288,15 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
       {Value<int>? id,
       Value<String>? name,
       Value<String>? description,
-      Value<int>? iconCodePoint,
-      Value<String>? iconFontFamily,
-      Value<String>? iconFontPackage,
-      Value<int>? iconColor,
+      Value<IconData>? icon,
+      Value<BKPColor>? color,
       Value<DateTime>? createdAt}) {
     return CategoriesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       description: description ?? this.description,
-      iconCodePoint: iconCodePoint ?? this.iconCodePoint,
-      iconFontFamily: iconFontFamily ?? this.iconFontFamily,
-      iconFontPackage: iconFontPackage ?? this.iconFontPackage,
-      iconColor: iconColor ?? this.iconColor,
+      icon: icon ?? this.icon,
+      color: color ?? this.color,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -401,17 +313,13 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
     if (description.present) {
       map['description'] = Variable<String>(description.value);
     }
-    if (iconCodePoint.present) {
-      map['icon_code_point'] = Variable<int>(iconCodePoint.value);
+    if (icon.present) {
+      map['icon'] =
+          Variable<String>($CategoriesTable.$convertericon.toSql(icon.value));
     }
-    if (iconFontFamily.present) {
-      map['icon_font_family'] = Variable<String>(iconFontFamily.value);
-    }
-    if (iconFontPackage.present) {
-      map['icon_font_package'] = Variable<String>(iconFontPackage.value);
-    }
-    if (iconColor.present) {
-      map['icon_color'] = Variable<int>(iconColor.value);
+    if (color.present) {
+      map['color'] =
+          Variable<String>($CategoriesTable.$convertercolor.toSql(color.value));
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -425,10 +333,8 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
-          ..write('iconCodePoint: $iconCodePoint, ')
-          ..write('iconFontFamily: $iconFontFamily, ')
-          ..write('iconFontPackage: $iconFontPackage, ')
-          ..write('iconColor: $iconColor, ')
+          ..write('icon: $icon, ')
+          ..write('color: $color, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -627,20 +533,16 @@ typedef $$CategoriesTableCreateCompanionBuilder = CategoriesCompanion Function({
   Value<int> id,
   required String name,
   required String description,
-  required int iconCodePoint,
-  required String iconFontFamily,
-  required String iconFontPackage,
-  required int iconColor,
+  required IconData icon,
+  required BKPColor color,
   Value<DateTime> createdAt,
 });
 typedef $$CategoriesTableUpdateCompanionBuilder = CategoriesCompanion Function({
   Value<int> id,
   Value<String> name,
   Value<String> description,
-  Value<int> iconCodePoint,
-  Value<String> iconFontFamily,
-  Value<String> iconFontPackage,
-  Value<int> iconColor,
+  Value<IconData> icon,
+  Value<BKPColor> color,
   Value<DateTime> createdAt,
 });
 
@@ -662,19 +564,15 @@ class $$CategoriesTableFilterComposer
   ColumnFilters<String> get description => $composableBuilder(
       column: $table.description, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get iconCodePoint => $composableBuilder(
-      column: $table.iconCodePoint, builder: (column) => ColumnFilters(column));
+  ColumnWithTypeConverterFilters<IconData, IconData, String> get icon =>
+      $composableBuilder(
+          column: $table.icon,
+          builder: (column) => ColumnWithTypeConverterFilters(column));
 
-  ColumnFilters<String> get iconFontFamily => $composableBuilder(
-      column: $table.iconFontFamily,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get iconFontPackage => $composableBuilder(
-      column: $table.iconFontPackage,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get iconColor => $composableBuilder(
-      column: $table.iconColor, builder: (column) => ColumnFilters(column));
+  ColumnWithTypeConverterFilters<BKPColor, BKPColor, String> get color =>
+      $composableBuilder(
+          column: $table.color,
+          builder: (column) => ColumnWithTypeConverterFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
@@ -698,20 +596,11 @@ class $$CategoriesTableOrderingComposer
   ColumnOrderings<String> get description => $composableBuilder(
       column: $table.description, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get iconCodePoint => $composableBuilder(
-      column: $table.iconCodePoint,
-      builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get icon => $composableBuilder(
+      column: $table.icon, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get iconFontFamily => $composableBuilder(
-      column: $table.iconFontFamily,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get iconFontPackage => $composableBuilder(
-      column: $table.iconFontPackage,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get iconColor => $composableBuilder(
-      column: $table.iconColor, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get color => $composableBuilder(
+      column: $table.color, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
@@ -735,17 +624,11 @@ class $$CategoriesTableAnnotationComposer
   GeneratedColumn<String> get description => $composableBuilder(
       column: $table.description, builder: (column) => column);
 
-  GeneratedColumn<int> get iconCodePoint => $composableBuilder(
-      column: $table.iconCodePoint, builder: (column) => column);
+  GeneratedColumnWithTypeConverter<IconData, String> get icon =>
+      $composableBuilder(column: $table.icon, builder: (column) => column);
 
-  GeneratedColumn<String> get iconFontFamily => $composableBuilder(
-      column: $table.iconFontFamily, builder: (column) => column);
-
-  GeneratedColumn<String> get iconFontPackage => $composableBuilder(
-      column: $table.iconFontPackage, builder: (column) => column);
-
-  GeneratedColumn<int> get iconColor =>
-      $composableBuilder(column: $table.iconColor, builder: (column) => column);
+  GeneratedColumnWithTypeConverter<BKPColor, String> get color =>
+      $composableBuilder(column: $table.color, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -777,40 +660,32 @@ class $$CategoriesTableTableManager extends RootTableManager<
             Value<int> id = const Value.absent(),
             Value<String> name = const Value.absent(),
             Value<String> description = const Value.absent(),
-            Value<int> iconCodePoint = const Value.absent(),
-            Value<String> iconFontFamily = const Value.absent(),
-            Value<String> iconFontPackage = const Value.absent(),
-            Value<int> iconColor = const Value.absent(),
+            Value<IconData> icon = const Value.absent(),
+            Value<BKPColor> color = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
           }) =>
               CategoriesCompanion(
             id: id,
             name: name,
             description: description,
-            iconCodePoint: iconCodePoint,
-            iconFontFamily: iconFontFamily,
-            iconFontPackage: iconFontPackage,
-            iconColor: iconColor,
+            icon: icon,
+            color: color,
             createdAt: createdAt,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String name,
             required String description,
-            required int iconCodePoint,
-            required String iconFontFamily,
-            required String iconFontPackage,
-            required int iconColor,
+            required IconData icon,
+            required BKPColor color,
             Value<DateTime> createdAt = const Value.absent(),
           }) =>
               CategoriesCompanion.insert(
             id: id,
             name: name,
             description: description,
-            iconCodePoint: iconCodePoint,
-            iconFontFamily: iconFontFamily,
-            iconFontPackage: iconFontPackage,
-            iconColor: iconColor,
+            icon: icon,
+            color: color,
             createdAt: createdAt,
           ),
           withReferenceMapper: (p0) => p0

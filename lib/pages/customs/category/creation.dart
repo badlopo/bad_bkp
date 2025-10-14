@@ -27,6 +27,7 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
       RouteNames.iconPicker,
       extra: color.color,
     );
+
     if (newIcon != null) {
       setState(() {
         icon = newIcon;
@@ -49,7 +50,7 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
           name: name,
           description: description,
           icon: icon.icon,
-          color: color.color,
+          color: color,
         );
       });
 

@@ -123,14 +123,7 @@ class _CategoryHomePageState extends State<CategoryHomePage>
               subtitle: category.description.isEmpty
                   ? null
                   : Text(category.description),
-              leading: Icon(
-                IconData(
-                  category.iconCodePoint,
-                  fontFamily: category.iconFontFamily,
-                  fontPackage: category.iconFontPackage,
-                ),
-                color: Color(category.iconColor),
-              ),
+              leading: Icon(category.icon, color: category.color.color),
               trailing: CupertinoListTileChevron(),
             );
           },

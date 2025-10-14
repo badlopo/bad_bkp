@@ -1,9 +1,12 @@
+import 'package:bookkeeping/constants/color.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/cupertino.dart' hide Table;
 import 'package:path_provider/path_provider.dart';
 
 part 'database.g.dart';
+
+part 'convert.dart';
 
 part 'operation.dart';
 
@@ -17,13 +20,9 @@ class Categories extends Table {
 
   TextColumn get description => text()();
 
-  IntColumn get iconCodePoint => integer()();
+  TextColumn get icon => text().map(const IconDataConverter())();
 
-  TextColumn get iconFontFamily => text()();
-
-  TextColumn get iconFontPackage => text()();
-
-  IntColumn get iconColor => integer()();
+  TextColumn get color => text().map(const BKPColorConverter())();
 
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }

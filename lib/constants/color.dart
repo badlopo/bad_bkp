@@ -11,8 +11,6 @@ class BKPColor {
   final String name;
   final Color color;
 
-  const BKPColor._(this.name, this.color);
-
   const BKPColor.blue()
       : name = 'Blue',
         color = CupertinoColors.systemBlue;

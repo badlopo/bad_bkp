@@ -13,6 +13,7 @@ class BKPPalette extends StatelessWidget {
     ),
   );
 
+  final double itemSize;
   final BKPColor color;
   final ValueChanged<BKPColor> onTap;
 
@@ -21,31 +22,39 @@ class BKPPalette extends StatelessWidget {
     onTap(v);
   }
 
-  const BKPPalette({super.key, required this.color, required this.onTap});
+  const BKPPalette({
+    super.key,
+    this.itemSize = 48,
+    required this.color,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      alignment: WrapAlignment.start,
-      children: [
-        for (final item in bkpColors)
-          GestureDetector(
-            onTap: () => _onTap(item),
-            child: Container(
-              width: 36,
-              height: 36,
-              margin: EdgeInsets.all(4),
-              alignment: Alignment.center,
-              decoration:
-                  item == color ? _activeDecoration : _inactiveDecoration,
-              child: Icon(
-                CupertinoIcons.circle_fill,
-                size: 32,
-                color: item.color,
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      child: Wrap(
+        alignment: WrapAlignment.start,
+        children: [
+          for (final item in bkpColors)
+            GestureDetector(
+              onTap: () => _onTap(item),
+              child: Container(
+                width: itemSize + 4,
+                height: itemSize + 4,
+                margin: EdgeInsets.all(4),
+                alignment: Alignment.center,
+                decoration:
+                    item == color ? _activeDecoration : _inactiveDecoration,
+                child: Icon(
+                  CupertinoIcons.circle_fill,
+                  size: itemSize,
+                  color: item.color,
+                ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -94,6 +94,7 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
                     textInputAction: TextInputAction.next,
                     textAlign: TextAlign.end,
                     autofocus: true,
+                    maxLength: 10,
                     prefix: Text('Name'),
                     validator: (v) => v?.isNotEmpty == true ? null : 'Required',
                     onSaved: (v) => name = v!,
@@ -101,6 +102,7 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
                   CupertinoTextFormFieldRow(
                     textInputAction: TextInputAction.done,
                     textAlign: TextAlign.end,
+                    maxLength: 20,
                     prefix: Text('Description'),
                     onSaved: (v) => description = v!,
                   ),

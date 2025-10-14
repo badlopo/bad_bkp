@@ -66,6 +66,12 @@ class _CategoryHomePageState extends State<CategoryHomePage>
     if (r == true) reloadPage();
   }
 
+  void handleToCategoryDetail(Category category) async {
+    final r =
+        await context.pushNamed(RouteNames.categoryDetail, extra: category);
+    if (r == true) reloadPage();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -110,7 +116,9 @@ class _CategoryHomePageState extends State<CategoryHomePage>
           itemCount: list.length,
           itemBuilder: (_, index) {
             final category = list[index];
+
             return CupertinoListTile(
+              onTap: () => handleToCategoryDetail(category),
               title: Text(category.name),
               subtitle: category.description.isEmpty
                   ? null
@@ -123,6 +131,7 @@ class _CategoryHomePageState extends State<CategoryHomePage>
                 ),
                 color: Color(category.iconColor),
               ),
+              trailing: CupertinoListTileChevron(),
             );
           },
         ),

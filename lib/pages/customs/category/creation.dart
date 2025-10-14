@@ -79,68 +79,65 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
           child: Text('Done'),
         ),
       ),
-      child: SafeArea(
-        bottom: false,
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            physics: ClampingScrollPhysics(),
-            children: [
-              CupertinoListSection.insetGrouped(
-                dividerMargin: 0,
-                additionalDividerMargin: 0,
-                children: [
-                  CupertinoTextFormFieldRow(
-                    textInputAction: TextInputAction.next,
-                    textAlign: TextAlign.end,
-                    autofocus: true,
-                    maxLength: 10,
-                    prefix: Text('Name'),
-                    validator: (v) => v?.isNotEmpty == true ? null : 'Required',
-                    onSaved: (v) => name = v!,
+      child: Form(
+        key: _formKey,
+        child: ListView(
+          physics: ClampingScrollPhysics(),
+          children: [
+            CupertinoListSection.insetGrouped(
+              dividerMargin: 0,
+              additionalDividerMargin: 0,
+              children: [
+                CupertinoTextFormFieldRow(
+                  textInputAction: TextInputAction.next,
+                  textAlign: TextAlign.end,
+                  autofocus: true,
+                  maxLength: 10,
+                  prefix: Text('Name'),
+                  validator: (v) => v?.isNotEmpty == true ? null : 'Required',
+                  onSaved: (v) => name = v!,
+                ),
+                CupertinoTextFormFieldRow(
+                  textInputAction: TextInputAction.done,
+                  textAlign: TextAlign.end,
+                  maxLength: 20,
+                  prefix: Text('Description'),
+                  onSaved: (v) => description = v!,
+                ),
+              ],
+            ),
+            CupertinoListSection.insetGrouped(
+              dividerMargin: 0,
+              additionalDividerMargin: 0,
+              children: [
+                CupertinoListTile(
+                  title: Text('Icon'),
+                  additionalInfo: Icon(icon.icon, color: color.color),
+                  trailing: CupertinoListTileChevron(),
+                  onTap: handleIconSelection,
+                ),
+              ],
+            ),
+            CupertinoListSection.insetGrouped(
+              dividerMargin: 0,
+              additionalDividerMargin: 0,
+              children: [
+                CupertinoListTile(
+                  title: Text('Color'),
+                  additionalInfo: Text(color.name),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: BKPPalette(
+                    color: color,
+                    onTap: (v) => setState(() {
+                      color = v;
+                    }),
                   ),
-                  CupertinoTextFormFieldRow(
-                    textInputAction: TextInputAction.done,
-                    textAlign: TextAlign.end,
-                    maxLength: 20,
-                    prefix: Text('Description'),
-                    onSaved: (v) => description = v!,
-                  ),
-                ],
-              ),
-              CupertinoListSection.insetGrouped(
-                dividerMargin: 0,
-                additionalDividerMargin: 0,
-                children: [
-                  CupertinoListTile(
-                    title: Text('Icon'),
-                    additionalInfo: Icon(icon.icon, color: color.color),
-                    trailing: CupertinoListTileChevron(),
-                    onTap: handleIconSelection,
-                  ),
-                ],
-              ),
-              CupertinoListSection.insetGrouped(
-                dividerMargin: 0,
-                additionalDividerMargin: 0,
-                children: [
-                  CupertinoListTile(
-                    title: Text('Color'),
-                    additionalInfo: Text(color.name),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: BKPPalette(
-                      color: color,
-                      onTap: (v) => setState(() {
-                        color = v;
-                      }),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

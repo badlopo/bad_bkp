@@ -53,9 +53,32 @@ extension TagExt on BKPDatabase {
     await into(tags).insert(TagsCompanion.insert(name: name));
   }
 
-  Future<List<Tag>> getTags({int pageNo = 1, int pageSize = 20}) {
+  Future<List<Tag>> getTags({
+    String? filter,
+    int pageNo = 1,
+    int pageSize = 20,
+  }) {
     final query = select(tags)
       ..limit(pageSize, offset: (pageNo - 1) * pageSize);
+
+    if (filter?.isNotEmpty == true) {
+      final escaped = filter!
+          .replaceAll(r'\', r'\\')
+          .replaceAll('_', r'\_')
+          .replaceAll('%', r'\%');
+      query.where((r) => r.name.like('%$escaped%', escapeChar: r'\'));
+    }
+
     return query.get();
+  }
+
+  // Future<void> updateTag(int id, {required name}) async {
+  //   final target = update(tags)..where((r) => r.id.equals(id));
+  //   await target.write(TagsCompanion.insert(name: name));
+  // }
+
+  Future<void> deleteTag(int id) async {
+    final target = delete(tags)..where((r) => r.id.equals(id));
+    await target.go();
   }
 }

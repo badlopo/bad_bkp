@@ -65,8 +65,8 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
     context.pop(true);
   }
 
-  void handleDelete() async {
-    final confirm = await showCupertinoDialog(
+  void handleDeletion() async {
+    final confirm = await showCupertinoDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
@@ -75,16 +75,12 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
               'This will move the items in that category to "Uncategorized."'),
           actions: [
             CupertinoDialogAction(
-              onPressed: () {
-                Navigator.of(context).pop(false); // 取消
-              },
+              onPressed: () => Navigator.pop(context, false),
               child: const Text('Cancel'),
             ),
             CupertinoDialogAction(
-              isDestructiveAction: true, // 红色警告按钮
-              onPressed: () {
-                Navigator.of(context).pop(true); // 确认
-              },
+              isDestructiveAction: true,
+              onPressed: () => Navigator.pop(context, true),
               child: const Text('Delete'),
             ),
           ],
@@ -184,7 +180,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                   additionalInfo: Text(widget.category.createdAt.formatted),
                 ),
                 CupertinoListTile(
-                  onTap: handleDelete,
+                  onTap: handleDeletion,
                   title: Text(
                     'Delete',
                     style: TextStyle(color: CupertinoColors.destructiveRed),

@@ -32,6 +32,10 @@ class _CategoryHomePageState extends State<CategoryHomePage>
 
   int page = 1;
   bool isEnd = false;
+
+  final TextEditingController controller = TextEditingController();
+  String filter = '';
+
   List<Category>? categories;
 
   Future<void> nextPage() async {
@@ -40,7 +44,10 @@ class _CategoryHomePageState extends State<CategoryHomePage>
       return;
     }
 
-    final r = await BKPDatabase.instance.getCategories(pageNo: page);
+    final r = await BKPDatabase.instance.getCategories(
+      filter: filter,
+      pageNo: page,
+    );
 
     setState(() {
       if (categories == null || page == 1) {
@@ -72,6 +79,17 @@ class _CategoryHomePageState extends State<CategoryHomePage>
     if (r == true) reloadPage();
   }
 
+  void handleFilter(String s) {
+    filter = s;
+    reloadPage();
+  }
+
+  void handleResetFilter() {
+    controller.clear();
+    filter = '';
+    reloadPage();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -99,34 +117,59 @@ class _CategoryHomePageState extends State<CategoryHomePage>
           hint: 'No data',
           footer: Padding(
             padding: EdgeInsets.symmetric(horizontal: 32),
-            child: CupertinoButton.filled(
-              onPressed: handleCategoryCreation,
-              child: Text('Create'),
-            ),
+            child: filter.isEmpty
+                ? CupertinoButton.filled(
+                    onPressed: handleCategoryCreation,
+                    child: Text('Create'),
+                  )
+                : CupertinoButton.filled(
+                    onPressed: handleResetFilter,
+                    child: Text('Reset filter'),
+                  ),
           ),
         ),
       );
     }
 
     return CupertinoPageScaffold(
-      child: BKPRefreshable(
-        onRefresh: reloadPage,
-        onLoad: nextPage,
-        child: ListView.builder(
-          itemCount: list.length,
-          itemBuilder: (_, index) {
-            final category = list[index];
+      resizeToAvoidBottomInset: false,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: CupertinoSearchTextField(
+                controller: controller,
+                onSubmitted: handleFilter,
+                onSuffixTap: handleResetFilter,
+              ),
+            ),
+            Expanded(
+              child: BKPRefreshable(
+                onRefresh: reloadPage,
+                onLoad: nextPage,
+                child: ListView.builder(
+                  itemCount: list.length,
+                  itemBuilder: (_, index) {
+                    final category = list[index];
 
-            return CupertinoListTile(
-              onTap: () => handleToCategoryDetail(category),
-              title: Text(category.name),
-              subtitle: category.description.isEmpty
-                  ? null
-                  : Text(category.description),
-              leading: Icon(category.icon, color: category.color.color),
-              trailing: CupertinoListTileChevron(),
-            );
-          },
+                    return CupertinoListTile(
+                      padding: EdgeInsets.zero,
+                      onTap: () => handleToCategoryDetail(category),
+                      title: Text(category.name),
+                      subtitle: category.description.isEmpty
+                          ? null
+                          : Text(category.description),
+                      leading: Icon(category.icon, color: category.color.color),
+                      trailing: CupertinoListTileChevron(),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

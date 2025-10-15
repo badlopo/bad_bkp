@@ -17,10 +17,26 @@ extension CategoryExt on BKPDatabase {
     );
   }
 
-  Future<List<Category>> getCategories({int pageNo = 1, int pageSize = 20}) {
+  Future<List<Category>> getCategories({
+    String? filter,
+    int pageNo = 1,
+    int pageSize = 20,
+  }) {
     final query = select(categories)
       ..limit(pageSize, offset: (pageNo - 1) * pageSize)
       ..orderBy([(r) => OrderingTerm.desc(r.createdAt)]);
+
+    if (filter?.isNotEmpty == true) {
+      final escaped = filter!
+          .replaceAll(r'\', r'\\')
+          .replaceAll('_', r'\_')
+          .replaceAll('%', r'\%');
+
+      query.where((r) =>
+          r.name.like('%$escaped%', escapeChar: r'\') |
+          r.description.like('%$escaped%', escapeChar: r'\'));
+    }
+
     return query.get();
   }
 

@@ -27,3 +27,13 @@ class IconDataConverter extends TypeConverter<IconData, String> {
   String toSql(IconData value) =>
       '${value.codePoint}:${value.fontFamily ?? ''}:${value.fontPackage ?? ''}';
 }
+
+class FileConverter extends TypeConverter<File, String> {
+  const FileConverter();
+
+  @override
+  File fromSql(String fromDb) => File(fromDb);
+
+  @override
+  String toSql(File value) => value.path;
+}

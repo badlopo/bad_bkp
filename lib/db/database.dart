@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bookkeeping/constants/color.dart';
 import 'package:bookkeeping/utils/storage.dart';
 import 'package:drift/drift.dart';
@@ -22,7 +24,7 @@ QueryExecutor _openConnection() {
   );
 }
 
-@DriftDatabase(tables: [Categories, Tags])
+@DriftDatabase(tables: [Categories, Tags, Transactions])
 class BKPDatabase extends _$BKPDatabase {
   static BKPDatabase? _instance;
 

@@ -25,3 +25,16 @@ class Tags extends Table {
 
   TextColumn get name => text()();
 }
+
+class Transactions extends Table {
+  @override
+  String get tableName => 'transactions';
+
+  IntColumn get id => integer().autoIncrement()();
+
+  TextColumn get description => text()();
+
+  DateTimeColumn get transactionTime => dateTime()();
+
+  TextColumn get snapshot => text().map(const FileConverter()).nullable()();
+}

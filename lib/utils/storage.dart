@@ -35,25 +35,52 @@ abstract class StorageUtils {
 
     await Hive.initFlutter(StorageType.hive.name);
     _box = await Hive.openBox('global');
+
+    getDirectoryOfStorage(StorageType.transactionSnapshot)
+        .create(recursive: true);
   }
 
   static Directory getDirectoryOfStorage(StorageType type) =>
       Directory(join(root.path, type.name));
 
   /// save file as transaction snapshot file
-  /// at `<root>/transactionSnapshot/<year>/transactionId.<extension>`.
+  /// at `<root>/transactionSnapshot/<year>/<transactionId>.<extension>`.
   static Future<File> saveTransactionSnapshot({
     required File file,
-    required int transactionId,
-    required DateTime transactionTime,
-  }) {
-    final target = setExtension(
-      join(getDirectoryOfStorage(StorageType.transactionSnapshot).path,
-          '${transactionTime.year}', '$transactionId'),
+    required int txId,
+    required int txYear,
+  }) async {
+    final target = File(setExtension(
+      join(
+        getDirectoryOfStorage(StorageType.transactionSnapshot).path,
+        '$txYear',
+        '$txId',
+      ),
       extension(file.path),
-    );
+    ));
 
-    return file.copy(target);
+    await target.parent.create(recursive: true);
+
+    return file.copy(target.path);
+  }
+
+  static Future<File> moveTransactionSnapshot({
+    required File file,
+    required int txId,
+    required int txYear,
+  }) async {
+    final target = File(setExtension(
+      join(
+        getDirectoryOfStorage(StorageType.transactionSnapshot).path,
+        '$txYear',
+        '$txId',
+      ),
+      extension(file.path),
+    ));
+
+    await target.parent.create(recursive: true);
+
+    return file.rename(target.path);
   }
 
   static Box? _box;

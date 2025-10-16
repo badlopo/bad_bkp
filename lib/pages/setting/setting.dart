@@ -58,6 +58,7 @@ class _SettingPageState extends State<SettingPage> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(middle: Text('Settings')),
       child: ListView(
+        physics: ClampingScrollPhysics(),
         children: [
           CupertinoFormSection.insetGrouped(
             header: Text('Preference'),

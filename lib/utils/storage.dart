@@ -10,6 +10,9 @@ enum StorageType {
 
   /// drift db files
   drift,
+
+  /// snapshot of transactions, grouped by year
+  transactionSnapshot,
 }
 
 enum KVType {
@@ -18,21 +21,46 @@ enum KVType {
 }
 
 abstract class StorageUtils {
-  static Future<Directory> getDirectoryOfStorage(StorageType type) async {
-    final root = await getApplicationDocumentsDirectory();
-    return Directory(join(root.path, type.name));
+  static Directory? _root;
+
+  static Directory get root {
+    if (_root == null) {
+      throw StateError('call "StorageUtils.prelude()" first');
+    }
+    return _root!;
   }
 
-  static Future<void> initKV() async {
+  static Future<void> prelude() async {
+    _root = await getApplicationDocumentsDirectory();
+
     await Hive.initFlutter(StorageType.hive.name);
     _box = await Hive.openBox('global');
+  }
+
+  static Directory getDirectoryOfStorage(StorageType type) =>
+      Directory(join(root.path, type.name));
+
+  /// save file as transaction snapshot file
+  /// at `<root>/transactionSnapshot/<year>/transactionId.<extension>`.
+  static Future<File> saveTransactionSnapshot({
+    required File file,
+    required int transactionId,
+    required DateTime transactionTime,
+  }) {
+    final target = setExtension(
+      join(getDirectoryOfStorage(StorageType.transactionSnapshot).path,
+          '${transactionTime.year}', '$transactionId'),
+      extension(file.path),
+    );
+
+    return file.copy(target);
   }
 
   static Box? _box;
 
   static Box get box {
     if (_box == null) {
-      throw StateError('call "StorageUtils.initKV()" first');
+      throw StateError('call "StorageUtils.prelude()" first');
     }
 
     return _box!;

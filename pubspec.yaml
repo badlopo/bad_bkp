@@ -28,14 +28,35 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  bot_toast:
+  cupertino_modal_sheet:
+  drift:
+  drift_flutter:
+  easy_refresh:
+
+  # 3.29.3
   flutter:
     sdk: flutter
+  flutter_iconpicker:
+  flutter_svg:
+  go_router:
+  hive_ce_flutter:
+  intl:
+  image_picker:
+  loading_animation_widget:
+
+
+  path:
+  path_provider:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
+  drift_dev:
+  build_runner:
+  flutter_launcher_icons:
   flutter_test:
     sdk: flutter
 
@@ -58,9 +79,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/undraw/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

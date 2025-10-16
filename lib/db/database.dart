@@ -18,7 +18,7 @@ QueryExecutor _openConnection() {
   return driftDatabase(
     name: 'global',
     native: DriftNativeOptions(
-      databaseDirectory: () =>
+      databaseDirectory: () async =>
           StorageUtils.getDirectoryOfStorage(StorageType.drift),
     ),
   );
@@ -38,3 +38,5 @@ class BKPDatabase extends _$BKPDatabase {
 
   BKPDatabase._() : super(_openConnection());
 }
+
+// codegen: `dart run build_runner build`

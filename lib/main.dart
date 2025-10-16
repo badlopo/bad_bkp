@@ -13,7 +13,7 @@ void main() async {
     systemNavigationBarColor: CupertinoColors.transparent,
   ));
 
-  await StorageUtils.initKV();
+  await StorageUtils.prelude();
   bkpTheme.restore();
 
   runApp(const MyApp());

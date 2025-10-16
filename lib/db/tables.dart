@@ -32,6 +32,8 @@ class Transactions extends Table {
 
   IntColumn get id => integer().autoIncrement()();
 
+  IntColumn get amount => integer()();
+
   TextColumn get description => text()();
 
   IntColumn get categoryId => integer()

@@ -72,10 +72,13 @@ extension TagExt on BKPDatabase {
   Future<List<Tag>> getTags({
     String? filter,
     int pageNo = 1,
-    int pageSize = 20,
+    int? pageSize = 20,
   }) {
-    final query = select(tags)
-      ..limit(pageSize, offset: (pageNo - 1) * pageSize);
+    final query = select(tags);
+
+    if (pageSize != null) {
+      query.limit(pageSize, offset: (pageNo - 1) * pageSize);
+    }
 
     if (filter?.isNotEmpty == true) {
       final escaped = filter!

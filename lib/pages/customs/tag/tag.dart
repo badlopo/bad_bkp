@@ -29,39 +29,20 @@ class _TagHomePageState extends State<TagHomePage>
     if (event == #create) handleTagCreation();
   }
 
-  int page = 1;
-  bool isEnd = false;
-
   final TextEditingController controller = TextEditingController();
   String filter = '';
 
-  List<Tag>? tags;
+  List<Tag>? result;
 
-  Future<void> nextPage() async {
-    if (isEnd) {
-      ToastUtils.info('No more data');
-      return;
-    }
-
-    final r = await BKPDatabase.instance.getTags(filter: filter, pageNo: page);
+  Future<void> getAllTags() async {
+    final r = await BKPDatabase.instance.getTags(
+      filter: filter,
+      pageSize: null,
+    );
 
     setState(() {
-      if (tags == null || page == 1) {
-        tags = r;
-      } else {
-        tags!.addAll(r);
-      }
+      result = r;
     });
-
-    page += 1;
-    if (r.length < 20) isEnd = true;
-  }
-
-  Future<void> reloadPage() async {
-    page = 1;
-    isEnd = false;
-    await nextPage();
-    ToastUtils.success('Refreshed');
   }
 
   void handleTagCreation() async {
@@ -108,7 +89,7 @@ class _TagHomePageState extends State<TagHomePage>
       await BKPDatabase.instance.createTag(name);
     });
 
-    reloadPage();
+    getAllTags();
   }
 
   void handleDeletion(Tag tag) async {
@@ -142,32 +123,32 @@ class _TagHomePageState extends State<TagHomePage>
       await BKPDatabase.instance.deleteTag(tag.id);
     });
 
-    await reloadPage();
+    await getAllTags();
   }
 
-  void handleFilter(String s) {
+  void handleFilter(String s) async {
     filter = s;
-    reloadPage();
+    await getAllTags();
   }
 
-  void handleResetFilter() {
+  void handleResetFilter() async {
     controller.clear();
     filter = '';
-    reloadPage();
+    await getAllTags();
   }
 
   @override
   void initState() {
     super.initState();
 
-    reloadPage();
+    getAllTags();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    final list = tags;
+    final list = result;
 
     if (list == null) {
       return CupertinoPageScaffold(
@@ -224,8 +205,7 @@ class _TagHomePageState extends State<TagHomePage>
             ),
             Expanded(
               child: BKPRefreshable(
-                onRefresh: reloadPage,
-                onLoad: nextPage,
+                onRefresh: getAllTags,
                 child: ListView(
                   children: [
                     Wrap(

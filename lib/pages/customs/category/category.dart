@@ -2,8 +2,8 @@ import 'package:bookkeeping/components/indicator.dart';
 import 'package:bookkeeping/components/refreshable.dart';
 import 'package:bookkeeping/constants/tunnel.dart';
 import 'package:bookkeeping/db/database.dart';
+import 'package:bookkeeping/mixins/pagination.dart';
 import 'package:bookkeeping/route/route.dart';
-import 'package:bookkeeping/utils/toast.dart';
 import 'package:bookkeeping/utils/tunnel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +18,7 @@ class CategoryHomePage extends StatefulWidget {
 class _CategoryHomePageState extends State<CategoryHomePage>
     with
         AutomaticKeepAliveClientMixin,
+        PaginatedQueryMixin<CategoryHomePage, Category>,
         SingleTunnelListenerMixin<CategoryHomePage, Symbol> {
   @override
   bool get wantKeepAlive => true;
@@ -30,42 +31,15 @@ class _CategoryHomePageState extends State<CategoryHomePage>
     if (event == #create) handleCategoryCreation();
   }
 
-  int page = 1;
-  bool isEnd = false;
-
   final TextEditingController controller = TextEditingController();
-  String filter = '';
 
-  List<Category>? categories;
-
-  Future<void> nextPage() async {
-    if (isEnd) {
-      ToastUtils.info('No more data');
-      return;
-    }
-
-    final r = await BKPDatabase.instance.getCategories(
+  @override
+  Future<Iterable<Category>?> fetcher() {
+    return BKPDatabase.instance.getCategories(
       filter: filter,
-      pageNo: page,
+      pageNo: pageNo,
+      pageSize: pageSize,
     );
-
-    setState(() {
-      if (categories == null || page == 1) {
-        categories = r;
-      } else {
-        categories!.addAll(r);
-      }
-    });
-
-    page += 1;
-    if (r.length < 20) isEnd = true;
-  }
-
-  Future<void> reloadPage() async {
-    page = 1;
-    isEnd = false;
-    await nextPage();
-    ToastUtils.success('Refreshed');
   }
 
   void handleCategoryCreation() async {
@@ -79,29 +53,17 @@ class _CategoryHomePageState extends State<CategoryHomePage>
     if (r == true) reloadPage();
   }
 
-  void handleFilter(String s) {
-    filter = s;
-    reloadPage();
-  }
-
-  void handleResetFilter() {
-    controller.clear();
-    filter = '';
-    reloadPage();
-  }
-
   @override
-  void initState() {
-    super.initState();
-
-    reloadPage();
+  Future<void> handleResetFilter() {
+    controller.clear();
+    return super.handleResetFilter();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    final list = categories;
+    final list = result;
 
     if (list == null) {
       return CupertinoPageScaffold(

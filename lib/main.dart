@@ -1,6 +1,6 @@
 import 'package:bookkeeping/route/route.dart';
 import 'package:bookkeeping/services/theme.dart';
-import 'package:bookkeeping/utils/kv.dart';
+import 'package:bookkeeping/utils/storage.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -13,7 +13,7 @@ void main() async {
     systemNavigationBarColor: CupertinoColors.transparent,
   ));
 
-  await KVUtils.prelude();
+  await StorageUtils.initKV();
   bkpTheme.restore();
 
   runApp(const MyApp());

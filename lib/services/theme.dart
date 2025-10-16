@@ -1,5 +1,5 @@
 import 'package:bookkeeping/constants/color.dart';
-import 'package:bookkeeping/utils/kv.dart';
+import 'package:bookkeeping/utils/storage.dart';
 import 'package:flutter/cupertino.dart';
 
 class _BKPTheme extends ChangeNotifier {
@@ -27,14 +27,14 @@ class _BKPTheme extends ChangeNotifier {
 // ignore: library_private_types_in_public_api
 extension BKPThemeExt on _BKPTheme {
   void save() {
-    KVUtils.setTheme({
+    StorageUtils.setKV(KVType.theme, {
       'darkMode': _darkMode,
       'themeColorName': _themeColor.name,
     });
   }
 
   void restore() {
-    final theme = KVUtils.getTheme();
+    final theme = StorageUtils.getKVAsMap(KVType.theme);
     if (theme == null) return;
 
     _darkMode = theme['darkMode'];

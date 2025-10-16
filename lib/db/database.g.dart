@@ -538,12 +538,20 @@ class $TransactionsTable extends Transactions
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
       'description', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _transactionTimeMeta =
-      const VerificationMeta('transactionTime');
+  static const VerificationMeta _categoryIdMeta =
+      const VerificationMeta('categoryId');
   @override
-  late final GeneratedColumn<DateTime> transactionTime =
-      GeneratedColumn<DateTime>('transaction_time', aliasedName, false,
-          type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  late final GeneratedColumn<int> categoryId = GeneratedColumn<int>(
+      'category_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES categories (id) ON DELETE SET NULL'));
+  static const VerificationMeta _timeMeta = const VerificationMeta('time');
+  @override
+  late final GeneratedColumn<DateTime> time = GeneratedColumn<DateTime>(
+      'time', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
   @override
   late final GeneratedColumnWithTypeConverter<File?, String> snapshot =
       GeneratedColumn<String>('snapshot', aliasedName, true,
@@ -551,7 +559,7 @@ class $TransactionsTable extends Transactions
           .withConverter<File?>($TransactionsTable.$convertersnapshotn);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, description, transactionTime, snapshot];
+      [id, description, categoryId, time, snapshot];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -573,13 +581,17 @@ class $TransactionsTable extends Transactions
     } else if (isInserting) {
       context.missing(_descriptionMeta);
     }
-    if (data.containsKey('transaction_time')) {
+    if (data.containsKey('category_id')) {
       context.handle(
-          _transactionTimeMeta,
-          transactionTime.isAcceptableOrUnknown(
-              data['transaction_time']!, _transactionTimeMeta));
+          _categoryIdMeta,
+          categoryId.isAcceptableOrUnknown(
+              data['category_id']!, _categoryIdMeta));
+    }
+    if (data.containsKey('time')) {
+      context.handle(
+          _timeMeta, time.isAcceptableOrUnknown(data['time']!, _timeMeta));
     } else if (isInserting) {
-      context.missing(_transactionTimeMeta);
+      context.missing(_timeMeta);
     }
     return context;
   }
@@ -594,8 +606,10 @@ class $TransactionsTable extends Transactions
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       description: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
-      transactionTime: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}transaction_time'])!,
+      categoryId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}category_id']),
+      time: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}time'])!,
       snapshot: $TransactionsTable.$convertersnapshotn.fromSql(attachedDatabase
           .typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}snapshot'])),
@@ -615,19 +629,24 @@ class $TransactionsTable extends Transactions
 class Transaction extends DataClass implements Insertable<Transaction> {
   final int id;
   final String description;
-  final DateTime transactionTime;
+  final int? categoryId;
+  final DateTime time;
   final File? snapshot;
   const Transaction(
       {required this.id,
       required this.description,
-      required this.transactionTime,
+      this.categoryId,
+      required this.time,
       this.snapshot});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['description'] = Variable<String>(description);
-    map['transaction_time'] = Variable<DateTime>(transactionTime);
+    if (!nullToAbsent || categoryId != null) {
+      map['category_id'] = Variable<int>(categoryId);
+    }
+    map['time'] = Variable<DateTime>(time);
     if (!nullToAbsent || snapshot != null) {
       map['snapshot'] = Variable<String>(
           $TransactionsTable.$convertersnapshotn.toSql(snapshot));
@@ -639,7 +658,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     return TransactionsCompanion(
       id: Value(id),
       description: Value(description),
-      transactionTime: Value(transactionTime),
+      categoryId: categoryId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categoryId),
+      time: Value(time),
       snapshot: snapshot == null && nullToAbsent
           ? const Value.absent()
           : Value(snapshot),
@@ -652,7 +674,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     return Transaction(
       id: serializer.fromJson<int>(json['id']),
       description: serializer.fromJson<String>(json['description']),
-      transactionTime: serializer.fromJson<DateTime>(json['transactionTime']),
+      categoryId: serializer.fromJson<int?>(json['categoryId']),
+      time: serializer.fromJson<DateTime>(json['time']),
       snapshot: serializer.fromJson<File?>(json['snapshot']),
     );
   }
@@ -662,7 +685,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'description': serializer.toJson<String>(description),
-      'transactionTime': serializer.toJson<DateTime>(transactionTime),
+      'categoryId': serializer.toJson<int?>(categoryId),
+      'time': serializer.toJson<DateTime>(time),
       'snapshot': serializer.toJson<File?>(snapshot),
     };
   }
@@ -670,12 +694,14 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   Transaction copyWith(
           {int? id,
           String? description,
-          DateTime? transactionTime,
+          Value<int?> categoryId = const Value.absent(),
+          DateTime? time,
           Value<File?> snapshot = const Value.absent()}) =>
       Transaction(
         id: id ?? this.id,
         description: description ?? this.description,
-        transactionTime: transactionTime ?? this.transactionTime,
+        categoryId: categoryId.present ? categoryId.value : this.categoryId,
+        time: time ?? this.time,
         snapshot: snapshot.present ? snapshot.value : this.snapshot,
       );
   Transaction copyWithCompanion(TransactionsCompanion data) {
@@ -683,9 +709,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       id: data.id.present ? data.id.value : this.id,
       description:
           data.description.present ? data.description.value : this.description,
-      transactionTime: data.transactionTime.present
-          ? data.transactionTime.value
-          : this.transactionTime,
+      categoryId:
+          data.categoryId.present ? data.categoryId.value : this.categoryId,
+      time: data.time.present ? data.time.value : this.time,
       snapshot: data.snapshot.present ? data.snapshot.value : this.snapshot,
     );
   }
@@ -695,52 +721,59 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     return (StringBuffer('Transaction(')
           ..write('id: $id, ')
           ..write('description: $description, ')
-          ..write('transactionTime: $transactionTime, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('time: $time, ')
           ..write('snapshot: $snapshot')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, description, transactionTime, snapshot);
+  int get hashCode => Object.hash(id, description, categoryId, time, snapshot);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Transaction &&
           other.id == this.id &&
           other.description == this.description &&
-          other.transactionTime == this.transactionTime &&
+          other.categoryId == this.categoryId &&
+          other.time == this.time &&
           other.snapshot == this.snapshot);
 }
 
 class TransactionsCompanion extends UpdateCompanion<Transaction> {
   final Value<int> id;
   final Value<String> description;
-  final Value<DateTime> transactionTime;
+  final Value<int?> categoryId;
+  final Value<DateTime> time;
   final Value<File?> snapshot;
   const TransactionsCompanion({
     this.id = const Value.absent(),
     this.description = const Value.absent(),
-    this.transactionTime = const Value.absent(),
+    this.categoryId = const Value.absent(),
+    this.time = const Value.absent(),
     this.snapshot = const Value.absent(),
   });
   TransactionsCompanion.insert({
     this.id = const Value.absent(),
     required String description,
-    required DateTime transactionTime,
+    this.categoryId = const Value.absent(),
+    required DateTime time,
     this.snapshot = const Value.absent(),
   })  : description = Value(description),
-        transactionTime = Value(transactionTime);
+        time = Value(time);
   static Insertable<Transaction> custom({
     Expression<int>? id,
     Expression<String>? description,
-    Expression<DateTime>? transactionTime,
+    Expression<int>? categoryId,
+    Expression<DateTime>? time,
     Expression<String>? snapshot,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (description != null) 'description': description,
-      if (transactionTime != null) 'transaction_time': transactionTime,
+      if (categoryId != null) 'category_id': categoryId,
+      if (time != null) 'time': time,
       if (snapshot != null) 'snapshot': snapshot,
     });
   }
@@ -748,12 +781,14 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   TransactionsCompanion copyWith(
       {Value<int>? id,
       Value<String>? description,
-      Value<DateTime>? transactionTime,
+      Value<int?>? categoryId,
+      Value<DateTime>? time,
       Value<File?>? snapshot}) {
     return TransactionsCompanion(
       id: id ?? this.id,
       description: description ?? this.description,
-      transactionTime: transactionTime ?? this.transactionTime,
+      categoryId: categoryId ?? this.categoryId,
+      time: time ?? this.time,
       snapshot: snapshot ?? this.snapshot,
     );
   }
@@ -767,8 +802,11 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     if (description.present) {
       map['description'] = Variable<String>(description.value);
     }
-    if (transactionTime.present) {
-      map['transaction_time'] = Variable<DateTime>(transactionTime.value);
+    if (categoryId.present) {
+      map['category_id'] = Variable<int>(categoryId.value);
+    }
+    if (time.present) {
+      map['time'] = Variable<DateTime>(time.value);
     }
     if (snapshot.present) {
       map['snapshot'] = Variable<String>(
@@ -782,7 +820,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     return (StringBuffer('TransactionsCompanion(')
           ..write('id: $id, ')
           ..write('description: $description, ')
-          ..write('transactionTime: $transactionTime, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('time: $time, ')
           ..write('snapshot: $snapshot')
           ..write(')'))
         .toString();
@@ -801,6 +840,18 @@ abstract class _$BKPDatabase extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
       [categories, tags, transactions];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
+        [
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('categories',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('transactions', kind: UpdateKind.update),
+            ],
+          ),
+        ],
+      );
 }
 
 typedef $$CategoriesTableCreateCompanionBuilder = CategoriesCompanion Function({
@@ -819,6 +870,26 @@ typedef $$CategoriesTableUpdateCompanionBuilder = CategoriesCompanion Function({
   Value<BKPColor> color,
   Value<DateTime> createdAt,
 });
+
+final class $$CategoriesTableReferences
+    extends BaseReferences<_$BKPDatabase, $CategoriesTable, Category> {
+  $$CategoriesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$TransactionsTable, List<Transaction>>
+      _transactionsRefsTable(_$BKPDatabase db) =>
+          MultiTypedResultKey.fromTable(db.transactions,
+              aliasName: $_aliasNameGenerator(
+                  db.categories.id, db.transactions.categoryId));
+
+  $$TransactionsTableProcessedTableManager get transactionsRefs {
+    final manager = $$TransactionsTableTableManager($_db, $_db.transactions)
+        .filter((f) => f.categoryId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_transactionsRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
 
 class $$CategoriesTableFilterComposer
     extends Composer<_$BKPDatabase, $CategoriesTable> {
@@ -850,6 +921,27 @@ class $$CategoriesTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> transactionsRefs(
+      Expression<bool> Function($$TransactionsTableFilterComposer f) f) {
+    final $$TransactionsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.transactions,
+        getReferencedColumn: (t) => t.categoryId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TransactionsTableFilterComposer(
+              $db: $db,
+              $table: $db.transactions,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
 }
 
 class $$CategoriesTableOrderingComposer
@@ -906,6 +998,27 @@ class $$CategoriesTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  Expression<T> transactionsRefs<T extends Object>(
+      Expression<T> Function($$TransactionsTableAnnotationComposer a) f) {
+    final $$TransactionsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.transactions,
+        getReferencedColumn: (t) => t.categoryId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TransactionsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.transactions,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
 }
 
 class $$CategoriesTableTableManager extends RootTableManager<
@@ -917,9 +1030,9 @@ class $$CategoriesTableTableManager extends RootTableManager<
     $$CategoriesTableAnnotationComposer,
     $$CategoriesTableCreateCompanionBuilder,
     $$CategoriesTableUpdateCompanionBuilder,
-    (Category, BaseReferences<_$BKPDatabase, $CategoriesTable, Category>),
+    (Category, $$CategoriesTableReferences),
     Category,
-    PrefetchHooks Function()> {
+    PrefetchHooks Function({bool transactionsRefs})> {
   $$CategoriesTableTableManager(_$BKPDatabase db, $CategoriesTable table)
       : super(TableManagerState(
           db: db,
@@ -963,9 +1076,35 @@ class $$CategoriesTableTableManager extends RootTableManager<
             createdAt: createdAt,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable(table),
+                    $$CategoriesTableReferences(db, table, e)
+                  ))
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({transactionsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (transactionsRefs) db.transactions],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (transactionsRefs)
+                    await $_getPrefetchedData<Category, $CategoriesTable,
+                            Transaction>(
+                        currentTable: table,
+                        referencedTable: $$CategoriesTableReferences
+                            ._transactionsRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$CategoriesTableReferences(db, table, p0)
+                                .transactionsRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.categoryId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
@@ -978,9 +1117,9 @@ typedef $$CategoriesTableProcessedTableManager = ProcessedTableManager<
     $$CategoriesTableAnnotationComposer,
     $$CategoriesTableCreateCompanionBuilder,
     $$CategoriesTableUpdateCompanionBuilder,
-    (Category, BaseReferences<_$BKPDatabase, $CategoriesTable, Category>),
+    (Category, $$CategoriesTableReferences),
     Category,
-    PrefetchHooks Function()>;
+    PrefetchHooks Function({bool transactionsRefs})>;
 typedef $$TagsTableCreateCompanionBuilder = TagsCompanion Function({
   Value<int> id,
   required String name,
@@ -1097,16 +1236,38 @@ typedef $$TransactionsTableCreateCompanionBuilder = TransactionsCompanion
     Function({
   Value<int> id,
   required String description,
-  required DateTime transactionTime,
+  Value<int?> categoryId,
+  required DateTime time,
   Value<File?> snapshot,
 });
 typedef $$TransactionsTableUpdateCompanionBuilder = TransactionsCompanion
     Function({
   Value<int> id,
   Value<String> description,
-  Value<DateTime> transactionTime,
+  Value<int?> categoryId,
+  Value<DateTime> time,
   Value<File?> snapshot,
 });
+
+final class $$TransactionsTableReferences
+    extends BaseReferences<_$BKPDatabase, $TransactionsTable, Transaction> {
+  $$TransactionsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $CategoriesTable _categoryIdTable(_$BKPDatabase db) =>
+      db.categories.createAlias(
+          $_aliasNameGenerator(db.transactions.categoryId, db.categories.id));
+
+  $$CategoriesTableProcessedTableManager? get categoryId {
+    final $_column = $_itemColumn<int>('category_id');
+    if ($_column == null) return null;
+    final manager = $$CategoriesTableTableManager($_db, $_db.categories)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_categoryIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
 
 class $$TransactionsTableFilterComposer
     extends Composer<_$BKPDatabase, $TransactionsTable> {
@@ -1123,14 +1284,33 @@ class $$TransactionsTableFilterComposer
   ColumnFilters<String> get description => $composableBuilder(
       column: $table.description, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get transactionTime => $composableBuilder(
-      column: $table.transactionTime,
-      builder: (column) => ColumnFilters(column));
+  ColumnFilters<DateTime> get time => $composableBuilder(
+      column: $table.time, builder: (column) => ColumnFilters(column));
 
   ColumnWithTypeConverterFilters<File?, File, String> get snapshot =>
       $composableBuilder(
           column: $table.snapshot,
           builder: (column) => ColumnWithTypeConverterFilters(column));
+
+  $$CategoriesTableFilterComposer get categoryId {
+    final $$CategoriesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.categoryId,
+        referencedTable: $db.categories,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CategoriesTableFilterComposer(
+              $db: $db,
+              $table: $db.categories,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
 }
 
 class $$TransactionsTableOrderingComposer
@@ -1148,12 +1328,31 @@ class $$TransactionsTableOrderingComposer
   ColumnOrderings<String> get description => $composableBuilder(
       column: $table.description, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get transactionTime => $composableBuilder(
-      column: $table.transactionTime,
-      builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<DateTime> get time => $composableBuilder(
+      column: $table.time, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get snapshot => $composableBuilder(
       column: $table.snapshot, builder: (column) => ColumnOrderings(column));
+
+  $$CategoriesTableOrderingComposer get categoryId {
+    final $$CategoriesTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.categoryId,
+        referencedTable: $db.categories,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CategoriesTableOrderingComposer(
+              $db: $db,
+              $table: $db.categories,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
 }
 
 class $$TransactionsTableAnnotationComposer
@@ -1171,11 +1370,31 @@ class $$TransactionsTableAnnotationComposer
   GeneratedColumn<String> get description => $composableBuilder(
       column: $table.description, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get transactionTime => $composableBuilder(
-      column: $table.transactionTime, builder: (column) => column);
+  GeneratedColumn<DateTime> get time =>
+      $composableBuilder(column: $table.time, builder: (column) => column);
 
   GeneratedColumnWithTypeConverter<File?, String> get snapshot =>
       $composableBuilder(column: $table.snapshot, builder: (column) => column);
+
+  $$CategoriesTableAnnotationComposer get categoryId {
+    final $$CategoriesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.categoryId,
+        referencedTable: $db.categories,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CategoriesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.categories,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
 }
 
 class $$TransactionsTableTableManager extends RootTableManager<
@@ -1187,12 +1406,9 @@ class $$TransactionsTableTableManager extends RootTableManager<
     $$TransactionsTableAnnotationComposer,
     $$TransactionsTableCreateCompanionBuilder,
     $$TransactionsTableUpdateCompanionBuilder,
-    (
-      Transaction,
-      BaseReferences<_$BKPDatabase, $TransactionsTable, Transaction>
-    ),
+    (Transaction, $$TransactionsTableReferences),
     Transaction,
-    PrefetchHooks Function()> {
+    PrefetchHooks Function({bool categoryId})> {
   $$TransactionsTableTableManager(_$BKPDatabase db, $TransactionsTable table)
       : super(TableManagerState(
           db: db,
@@ -1206,31 +1422,72 @@ class $$TransactionsTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> description = const Value.absent(),
-            Value<DateTime> transactionTime = const Value.absent(),
+            Value<int?> categoryId = const Value.absent(),
+            Value<DateTime> time = const Value.absent(),
             Value<File?> snapshot = const Value.absent(),
           }) =>
               TransactionsCompanion(
             id: id,
             description: description,
-            transactionTime: transactionTime,
+            categoryId: categoryId,
+            time: time,
             snapshot: snapshot,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String description,
-            required DateTime transactionTime,
+            Value<int?> categoryId = const Value.absent(),
+            required DateTime time,
             Value<File?> snapshot = const Value.absent(),
           }) =>
               TransactionsCompanion.insert(
             id: id,
             description: description,
-            transactionTime: transactionTime,
+            categoryId: categoryId,
+            time: time,
             snapshot: snapshot,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable(table),
+                    $$TransactionsTableReferences(db, table, e)
+                  ))
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({categoryId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (categoryId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.categoryId,
+                    referencedTable:
+                        $$TransactionsTableReferences._categoryIdTable(db),
+                    referencedColumn:
+                        $$TransactionsTableReferences._categoryIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ));
 }
 
@@ -1243,12 +1500,9 @@ typedef $$TransactionsTableProcessedTableManager = ProcessedTableManager<
     $$TransactionsTableAnnotationComposer,
     $$TransactionsTableCreateCompanionBuilder,
     $$TransactionsTableUpdateCompanionBuilder,
-    (
-      Transaction,
-      BaseReferences<_$BKPDatabase, $TransactionsTable, Transaction>
-    ),
+    (Transaction, $$TransactionsTableReferences),
     Transaction,
-    PrefetchHooks Function()>;
+    PrefetchHooks Function({bool categoryId})>;
 
 class $BKPDatabaseManager {
   final _$BKPDatabase _db;

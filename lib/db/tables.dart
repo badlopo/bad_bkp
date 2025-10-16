@@ -34,7 +34,11 @@ class Transactions extends Table {
 
   TextColumn get description => text()();
 
-  DateTimeColumn get transactionTime => dateTime()();
+  IntColumn get categoryId => integer()
+      .references(Categories, #id, onDelete: KeyAction.setNull)
+      .nullable()();
+
+  DateTimeColumn get time => dateTime()();
 
   TextColumn get snapshot => text().map(const FileConverter()).nullable()();
 }

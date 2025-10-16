@@ -1,6 +1,6 @@
 import 'package:bookkeeping/constants/tunnel.dart';
-import 'package:bookkeeping/pages/customs/category/category.dart';
-import 'package:bookkeeping/pages/customs/tag/tag.dart';
+import 'package:bookkeeping/pages/category/category.dart';
+import 'package:bookkeeping/pages/tag/tag.dart';
 import 'package:bookkeeping/utils/tunnel.dart';
 import 'package:flutter/cupertino.dart';
 

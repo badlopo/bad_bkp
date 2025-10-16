@@ -1,8 +1,8 @@
 import 'dart:ui';
 
 import 'package:bookkeeping/db/database.dart';
-import 'package:bookkeeping/pages/customs/category/creation.dart';
-import 'package:bookkeeping/pages/customs/category/detail.dart';
+import 'package:bookkeeping/pages/category/creation.dart';
+import 'package:bookkeeping/pages/category/detail.dart';
 import 'package:bookkeeping/pages/home/home.dart';
 import 'package:bookkeeping/pages/misc/icon_picker.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -43,12 +43,12 @@ final router = GoRouter(
     ),
     GoRoute(
       name: RouteNames.categoryCreation,
-      path: '/customs/category/creation',
+      path: '/category/creation',
       builder: (ctx, state) => CategoryCreationPage(),
     ),
     GoRoute(
       name: RouteNames.categoryDetail,
-      path: '/customs/category/detail',
+      path: '/category/detail',
       builder: (ctx, state) =>
           CategoryDetailPage(category: state.extra as Category),
     ),

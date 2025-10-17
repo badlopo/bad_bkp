@@ -9,7 +9,10 @@ class BKPColor {
   }
 
   final String name;
-  final Color color;
+  final CupertinoDynamicColor color;
+
+  CupertinoDynamicColor resolveFrom(BuildContext context) =>
+      color.resolveFrom(context);
 
   const BKPColor.blue()
       : name = 'Blue',

@@ -66,7 +66,6 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
       resizeToAvoidBottomInset: false,
       backgroundColor: CupertinoColors.systemGroupedBackground,
       navigationBar: CupertinoNavigationBar(
-        border: null,
         backgroundColor: CupertinoColors.systemGroupedBackground,
         automaticBackgroundVisibility: false,
         leading: CupertinoButton(
@@ -92,7 +91,7 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
               children: [
                 CupertinoTextFormFieldRow(
                   textInputAction: TextInputAction.next,
-                  textAlign: TextAlign.end,
+                  textAlign: TextAlign.right,
                   autofocus: true,
                   maxLength: BKPConstraints.categoryNameMaxLength,
                   prefix: Text('Name'),
@@ -101,7 +100,7 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
                 ),
                 CupertinoTextFormFieldRow(
                   textInputAction: TextInputAction.done,
-                  textAlign: TextAlign.end,
+                  textAlign: TextAlign.right,
                   maxLength: BKPConstraints.categoryDescriptionMaxLength,
                   prefix: Text('Description'),
                   onSaved: (v) => description = v!,

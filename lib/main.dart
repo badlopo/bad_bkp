@@ -4,6 +4,7 @@ import 'package:bookkeeping/utils/storage.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +29,11 @@ class MyApp extends StatelessWidget {
       listenable: bkpTheme,
       builder: (context, child) => CupertinoApp.router(
         title: 'BKP',
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         theme: CupertinoThemeData(
           brightness: bkpTheme.darkMode ? Brightness.dark : Brightness.light,
           primaryColor: bkpTheme.themeColor.color,

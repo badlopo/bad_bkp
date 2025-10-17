@@ -29,7 +29,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   bot_toast:
-  cupertino_modal_sheet:
+  cupertino_calendar_picker:
   drift:
   drift_flutter:
   easy_refresh:
@@ -38,6 +38,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_iconpicker:
+  flutter_localizations:
+    sdk: flutter
   flutter_svg:
   go_router:
   hive_ce_flutter:
@@ -54,8 +56,8 @@ dependencies:
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
-  drift_dev:
   build_runner:
+  drift_dev:
   flutter_launcher_icons:
   flutter_test:
     sdk: flutter

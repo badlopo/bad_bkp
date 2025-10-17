@@ -32,36 +32,35 @@ class _TagHomePageState extends State<TagHomePage>
   final TextEditingController controller = TextEditingController();
   String filter = '';
 
-  List<Tag>? result;
+  List<Tag>? tags;
 
-  Future<void> getAllTags() async {
+  Future<void> getTags() async {
     final r = await BKPDatabase.instance.getTags(
       filter: filter,
       pageSize: null,
     );
 
     setState(() {
-      result = r;
+      tags = r;
     });
   }
 
   void handleTagCreation() async {
-    final controller = TextEditingController();
-
     final name = await showCupertinoDialog<String>(
       context: context,
       builder: (BuildContext context) {
+        String s = '';
         return CupertinoAlertDialog(
           title: Text('Create tag'),
           content: Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: CupertinoTextField(
-              controller: controller,
               autofocus: true,
               maxLength: BKPConstraints.tagNameMaxLength,
               clearButtonMode: OverlayVisibilityMode.editing,
               placeholder: 'Enter tag name',
-              onSubmitted: (s) => Navigator.pop(context, s),
+              onChanged: (v) => s = v,
+              onSubmitted: (v) => Navigator.pop(context, v),
             ),
           ),
           actions: [
@@ -71,7 +70,7 @@ class _TagHomePageState extends State<TagHomePage>
             ),
             CupertinoDialogAction(
               isDefaultAction: true,
-              onPressed: () => Navigator.pop(context, controller.text),
+              onPressed: () => Navigator.pop(context, s),
               child: const Text('Create'),
             ),
           ],
@@ -89,7 +88,7 @@ class _TagHomePageState extends State<TagHomePage>
       await BKPDatabase.instance.createTag(name);
     });
 
-    getAllTags();
+    getTags();
   }
 
   void handleDeletion(Tag tag) async {
@@ -123,41 +122,39 @@ class _TagHomePageState extends State<TagHomePage>
       await BKPDatabase.instance.deleteTag(tag.id);
     });
 
-    await getAllTags();
+    await getTags();
   }
 
   void handleFilter(String s) async {
     filter = s;
-    await getAllTags();
+    await getTags();
   }
 
   void handleResetFilter() async {
     controller.clear();
     filter = '';
-    await getAllTags();
+    await getTags();
   }
 
   @override
   void initState() {
     super.initState();
 
-    getAllTags();
+    getTags();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    final list = result;
-
-    if (list == null) {
+    if (tags == null) {
       return CupertinoPageScaffold(
         resizeToAvoidBottomInset: false,
         child: LoadingIndicator(),
       );
     }
 
-    if (list.isEmpty) {
+    if (tags!.isEmpty) {
       return CupertinoPageScaffold(
         resizeToAvoidBottomInset: false,
         child: EmptyIndicator(
@@ -205,14 +202,14 @@ class _TagHomePageState extends State<TagHomePage>
             ),
             Expanded(
               child: BKPRefreshable(
-                onRefresh: getAllTags,
+                onRefresh: getTags,
                 child: ListView(
                   children: [
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        for (final tag in list)
+                        for (final tag in tags!)
                           CupertinoButton.tinted(
                             sizeStyle: CupertinoButtonSize.small,
                             onPressed: null,

@@ -4,7 +4,7 @@ import 'package:bookkeeping/constants/color.dart';
 import 'package:bookkeeping/utils/storage.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
-import 'package:flutter/cupertino.dart' hide Table;
+import 'package:flutter/cupertino.dart' hide Table, Column;
 
 part 'database.g.dart';
 
@@ -24,7 +24,7 @@ QueryExecutor _openConnection() {
   );
 }
 
-@DriftDatabase(tables: [Categories, Tags, Transactions])
+@DriftDatabase(tables: [Categories, Tags, Transactions, TransactionTagLinks])
 class BKPDatabase extends _$BKPDatabase {
   static BKPDatabase? _instance;
 

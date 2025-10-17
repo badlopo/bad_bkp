@@ -65,8 +65,8 @@ extension CategoryExt on BKPDatabase {
 }
 
 extension TagExt on BKPDatabase {
-  Future<void> createTag(String name) async {
-    await into(tags).insert(TagsCompanion.insert(name: name));
+  Future<Tag> createTag(String name) async {
+    return into(tags).insertReturning(TagsCompanion.insert(name: name));
   }
 
   Future<List<Tag>> getTags({
@@ -98,6 +98,46 @@ extension TagExt on BKPDatabase {
 
   Future<void> deleteTag(int id) async {
     final target = delete(tags)..where((r) => r.id.equals(id));
+    await target.go();
+  }
+}
+
+extension TransactionExt on BKPDatabase {
+  Future<void> createTransaction({
+    required int amount,
+    required String description,
+    int? categoryId,
+    required DateTime time,
+    File? snapshot,
+    Set<int> tagIds = const {},
+  }) async {
+    return transaction(
+      () async {
+        final tx = await into(transactions).insertReturning(
+          TransactionsCompanion.insert(
+            amount: amount,
+            description: description,
+            categoryId: Value(categoryId),
+            time: time,
+            snapshot: Value(snapshot),
+          ),
+        );
+
+        await transactionTagLinks.insertAll(
+          tagIds.map((tagId) =>
+              TransactionTagLinksCompanion.insert(txId: tx.id, tagId: tagId)),
+          mode: InsertMode.insertOrIgnore,
+        );
+      },
+    );
+  }
+
+  // TODO: getTransactions
+
+  // TODO: updateTransaction
+
+  Future<void> deleteTransaction(int id) async {
+    final target = delete(transactions)..where((r) => r.id.equals(id));
     await target.go();
   }
 }

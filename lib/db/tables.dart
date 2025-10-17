@@ -44,3 +44,17 @@ class Transactions extends Table {
 
   TextColumn get snapshot => text().map(const FileConverter()).nullable()();
 }
+
+class TransactionTagLinks extends Table {
+  @override
+  String get tableName => 'transaction_tag_links';
+
+  @override
+  Set<Column> get primaryKey => {txId, tagId};
+
+  IntColumn get txId =>
+      integer().references(Transactions, #id, onDelete: KeyAction.cascade)();
+
+  IntColumn get tagId =>
+      integer().references(Tags, #id, onDelete: KeyAction.cascade)();
+}

@@ -865,18 +865,217 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   }
 }
 
+class $TransactionTagLinksTable extends TransactionTagLinks
+    with TableInfo<$TransactionTagLinksTable, TransactionTagLink> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TransactionTagLinksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _txIdMeta = const VerificationMeta('txId');
+  @override
+  late final GeneratedColumn<int> txId = GeneratedColumn<int>(
+      'tx_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES transactions (id) ON DELETE CASCADE'));
+  static const VerificationMeta _tagIdMeta = const VerificationMeta('tagId');
+  @override
+  late final GeneratedColumn<int> tagId = GeneratedColumn<int>(
+      'tag_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES tags (id) ON DELETE CASCADE'));
+  @override
+  List<GeneratedColumn> get $columns => [txId, tagId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'transaction_tag_links';
+  @override
+  VerificationContext validateIntegrity(Insertable<TransactionTagLink> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('tx_id')) {
+      context.handle(
+          _txIdMeta, txId.isAcceptableOrUnknown(data['tx_id']!, _txIdMeta));
+    } else if (isInserting) {
+      context.missing(_txIdMeta);
+    }
+    if (data.containsKey('tag_id')) {
+      context.handle(
+          _tagIdMeta, tagId.isAcceptableOrUnknown(data['tag_id']!, _tagIdMeta));
+    } else if (isInserting) {
+      context.missing(_tagIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {txId, tagId};
+  @override
+  TransactionTagLink map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TransactionTagLink(
+      txId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}tx_id'])!,
+      tagId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}tag_id'])!,
+    );
+  }
+
+  @override
+  $TransactionTagLinksTable createAlias(String alias) {
+    return $TransactionTagLinksTable(attachedDatabase, alias);
+  }
+}
+
+class TransactionTagLink extends DataClass
+    implements Insertable<TransactionTagLink> {
+  final int txId;
+  final int tagId;
+  const TransactionTagLink({required this.txId, required this.tagId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['tx_id'] = Variable<int>(txId);
+    map['tag_id'] = Variable<int>(tagId);
+    return map;
+  }
+
+  TransactionTagLinksCompanion toCompanion(bool nullToAbsent) {
+    return TransactionTagLinksCompanion(
+      txId: Value(txId),
+      tagId: Value(tagId),
+    );
+  }
+
+  factory TransactionTagLink.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TransactionTagLink(
+      txId: serializer.fromJson<int>(json['txId']),
+      tagId: serializer.fromJson<int>(json['tagId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'txId': serializer.toJson<int>(txId),
+      'tagId': serializer.toJson<int>(tagId),
+    };
+  }
+
+  TransactionTagLink copyWith({int? txId, int? tagId}) => TransactionTagLink(
+        txId: txId ?? this.txId,
+        tagId: tagId ?? this.tagId,
+      );
+  TransactionTagLink copyWithCompanion(TransactionTagLinksCompanion data) {
+    return TransactionTagLink(
+      txId: data.txId.present ? data.txId.value : this.txId,
+      tagId: data.tagId.present ? data.tagId.value : this.tagId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TransactionTagLink(')
+          ..write('txId: $txId, ')
+          ..write('tagId: $tagId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(txId, tagId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TransactionTagLink &&
+          other.txId == this.txId &&
+          other.tagId == this.tagId);
+}
+
+class TransactionTagLinksCompanion extends UpdateCompanion<TransactionTagLink> {
+  final Value<int> txId;
+  final Value<int> tagId;
+  final Value<int> rowid;
+  const TransactionTagLinksCompanion({
+    this.txId = const Value.absent(),
+    this.tagId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TransactionTagLinksCompanion.insert({
+    required int txId,
+    required int tagId,
+    this.rowid = const Value.absent(),
+  })  : txId = Value(txId),
+        tagId = Value(tagId);
+  static Insertable<TransactionTagLink> custom({
+    Expression<int>? txId,
+    Expression<int>? tagId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (txId != null) 'tx_id': txId,
+      if (tagId != null) 'tag_id': tagId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TransactionTagLinksCompanion copyWith(
+      {Value<int>? txId, Value<int>? tagId, Value<int>? rowid}) {
+    return TransactionTagLinksCompanion(
+      txId: txId ?? this.txId,
+      tagId: tagId ?? this.tagId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (txId.present) {
+      map['tx_id'] = Variable<int>(txId.value);
+    }
+    if (tagId.present) {
+      map['tag_id'] = Variable<int>(tagId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TransactionTagLinksCompanion(')
+          ..write('txId: $txId, ')
+          ..write('tagId: $tagId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$BKPDatabase extends GeneratedDatabase {
   _$BKPDatabase(QueryExecutor e) : super(e);
   $BKPDatabaseManager get managers => $BKPDatabaseManager(this);
   late final $CategoriesTable categories = $CategoriesTable(this);
   late final $TagsTable tags = $TagsTable(this);
   late final $TransactionsTable transactions = $TransactionsTable(this);
+  late final $TransactionTagLinksTable transactionTagLinks =
+      $TransactionTagLinksTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [categories, tags, transactions];
+      [categories, tags, transactions, transactionTagLinks];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
         [
@@ -885,6 +1084,20 @@ abstract class _$BKPDatabase extends GeneratedDatabase {
                 limitUpdateKind: UpdateKind.delete),
             result: [
               TableUpdate('transactions', kind: UpdateKind.update),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('transactions',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('transaction_tag_links', kind: UpdateKind.delete),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('tags',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('transaction_tag_links', kind: UpdateKind.delete),
             ],
           ),
         ],
@@ -1166,6 +1379,29 @@ typedef $$TagsTableUpdateCompanionBuilder = TagsCompanion Function({
   Value<String> name,
 });
 
+final class $$TagsTableReferences
+    extends BaseReferences<_$BKPDatabase, $TagsTable, Tag> {
+  $$TagsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$TransactionTagLinksTable,
+      List<TransactionTagLink>> _transactionTagLinksRefsTable(
+          _$BKPDatabase db) =>
+      MultiTypedResultKey.fromTable(db.transactionTagLinks,
+          aliasName:
+              $_aliasNameGenerator(db.tags.id, db.transactionTagLinks.tagId));
+
+  $$TransactionTagLinksTableProcessedTableManager get transactionTagLinksRefs {
+    final manager =
+        $$TransactionTagLinksTableTableManager($_db, $_db.transactionTagLinks)
+            .filter((f) => f.tagId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_transactionTagLinksRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
 class $$TagsTableFilterComposer extends Composer<_$BKPDatabase, $TagsTable> {
   $$TagsTableFilterComposer({
     required super.$db,
@@ -1179,6 +1415,27 @@ class $$TagsTableFilterComposer extends Composer<_$BKPDatabase, $TagsTable> {
 
   ColumnFilters<String> get name => $composableBuilder(
       column: $table.name, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> transactionTagLinksRefs(
+      Expression<bool> Function($$TransactionTagLinksTableFilterComposer f) f) {
+    final $$TransactionTagLinksTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.transactionTagLinks,
+        getReferencedColumn: (t) => t.tagId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TransactionTagLinksTableFilterComposer(
+              $db: $db,
+              $table: $db.transactionTagLinks,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
 }
 
 class $$TagsTableOrderingComposer extends Composer<_$BKPDatabase, $TagsTable> {
@@ -1210,6 +1467,29 @@ class $$TagsTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
+
+  Expression<T> transactionTagLinksRefs<T extends Object>(
+      Expression<T> Function($$TransactionTagLinksTableAnnotationComposer a)
+          f) {
+    final $$TransactionTagLinksTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.transactionTagLinks,
+            getReferencedColumn: (t) => t.tagId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$TransactionTagLinksTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.transactionTagLinks,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
 }
 
 class $$TagsTableTableManager extends RootTableManager<
@@ -1221,9 +1501,9 @@ class $$TagsTableTableManager extends RootTableManager<
     $$TagsTableAnnotationComposer,
     $$TagsTableCreateCompanionBuilder,
     $$TagsTableUpdateCompanionBuilder,
-    (Tag, BaseReferences<_$BKPDatabase, $TagsTable, Tag>),
+    (Tag, $$TagsTableReferences),
     Tag,
-    PrefetchHooks Function()> {
+    PrefetchHooks Function({bool transactionTagLinksRefs})> {
   $$TagsTableTableManager(_$BKPDatabase db, $TagsTable table)
       : super(TableManagerState(
           db: db,
@@ -1251,9 +1531,35 @@ class $$TagsTableTableManager extends RootTableManager<
             name: name,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) =>
+                  (e.readTable(table), $$TagsTableReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({transactionTagLinksRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (transactionTagLinksRefs) db.transactionTagLinks
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (transactionTagLinksRefs)
+                    await $_getPrefetchedData<Tag, $TagsTable,
+                            TransactionTagLink>(
+                        currentTable: table,
+                        referencedTable: $$TagsTableReferences
+                            ._transactionTagLinksRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$TagsTableReferences(db, table, p0)
+                                .transactionTagLinksRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.tagId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
@@ -1266,9 +1572,9 @@ typedef $$TagsTableProcessedTableManager = ProcessedTableManager<
     $$TagsTableAnnotationComposer,
     $$TagsTableCreateCompanionBuilder,
     $$TagsTableUpdateCompanionBuilder,
-    (Tag, BaseReferences<_$BKPDatabase, $TagsTable, Tag>),
+    (Tag, $$TagsTableReferences),
     Tag,
-    PrefetchHooks Function()>;
+    PrefetchHooks Function({bool transactionTagLinksRefs})>;
 typedef $$TransactionsTableCreateCompanionBuilder = TransactionsCompanion
     Function({
   Value<int> id,
@@ -1305,6 +1611,24 @@ final class $$TransactionsTableReferences
     if (item == null) return manager;
     return ProcessedTableManager(
         manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$TransactionTagLinksTable,
+      List<TransactionTagLink>> _transactionTagLinksRefsTable(
+          _$BKPDatabase db) =>
+      MultiTypedResultKey.fromTable(db.transactionTagLinks,
+          aliasName: $_aliasNameGenerator(
+              db.transactions.id, db.transactionTagLinks.txId));
+
+  $$TransactionTagLinksTableProcessedTableManager get transactionTagLinksRefs {
+    final manager =
+        $$TransactionTagLinksTableTableManager($_db, $_db.transactionTagLinks)
+            .filter((f) => f.txId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_transactionTagLinksRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
   }
 }
 
@@ -1352,6 +1676,27 @@ class $$TransactionsTableFilterComposer
                   $removeJoinBuilderFromRootComposer,
             ));
     return composer;
+  }
+
+  Expression<bool> transactionTagLinksRefs(
+      Expression<bool> Function($$TransactionTagLinksTableFilterComposer f) f) {
+    final $$TransactionTagLinksTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.transactionTagLinks,
+        getReferencedColumn: (t) => t.txId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TransactionTagLinksTableFilterComposer(
+              $db: $db,
+              $table: $db.transactionTagLinks,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
   }
 }
 
@@ -1443,6 +1788,29 @@ class $$TransactionsTableAnnotationComposer
             ));
     return composer;
   }
+
+  Expression<T> transactionTagLinksRefs<T extends Object>(
+      Expression<T> Function($$TransactionTagLinksTableAnnotationComposer a)
+          f) {
+    final $$TransactionTagLinksTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.transactionTagLinks,
+            getReferencedColumn: (t) => t.txId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$TransactionTagLinksTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.transactionTagLinks,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
 }
 
 class $$TransactionsTableTableManager extends RootTableManager<
@@ -1456,7 +1824,7 @@ class $$TransactionsTableTableManager extends RootTableManager<
     $$TransactionsTableUpdateCompanionBuilder,
     (Transaction, $$TransactionsTableReferences),
     Transaction,
-    PrefetchHooks Function({bool categoryId})> {
+    PrefetchHooks Function({bool categoryId, bool transactionTagLinksRefs})> {
   $$TransactionsTableTableManager(_$BKPDatabase db, $TransactionsTable table)
       : super(TableManagerState(
           db: db,
@@ -1505,10 +1873,13 @@ class $$TransactionsTableTableManager extends RootTableManager<
                     $$TransactionsTableReferences(db, table, e)
                   ))
               .toList(),
-          prefetchHooksCallback: ({categoryId = false}) {
+          prefetchHooksCallback: (
+              {categoryId = false, transactionTagLinksRefs = false}) {
             return PrefetchHooks(
               db: db,
-              explicitlyWatchedTables: [],
+              explicitlyWatchedTables: [
+                if (transactionTagLinksRefs) db.transactionTagLinks
+              ],
               addJoins: <
                   T extends TableManagerState<
                       dynamic,
@@ -1536,7 +1907,21 @@ class $$TransactionsTableTableManager extends RootTableManager<
                 return state;
               },
               getPrefetchedDataCallback: (items) async {
-                return [];
+                return [
+                  if (transactionTagLinksRefs)
+                    await $_getPrefetchedData<Transaction, $TransactionsTable,
+                            TransactionTagLink>(
+                        currentTable: table,
+                        referencedTable: $$TransactionsTableReferences
+                            ._transactionTagLinksRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$TransactionsTableReferences(db, table, p0)
+                                .transactionTagLinksRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) =>
+                                referencedItems.where((e) => e.txId == item.id),
+                        typedResults: items)
+                ];
               },
             );
           },
@@ -1554,7 +1939,316 @@ typedef $$TransactionsTableProcessedTableManager = ProcessedTableManager<
     $$TransactionsTableUpdateCompanionBuilder,
     (Transaction, $$TransactionsTableReferences),
     Transaction,
-    PrefetchHooks Function({bool categoryId})>;
+    PrefetchHooks Function({bool categoryId, bool transactionTagLinksRefs})>;
+typedef $$TransactionTagLinksTableCreateCompanionBuilder
+    = TransactionTagLinksCompanion Function({
+  required int txId,
+  required int tagId,
+  Value<int> rowid,
+});
+typedef $$TransactionTagLinksTableUpdateCompanionBuilder
+    = TransactionTagLinksCompanion Function({
+  Value<int> txId,
+  Value<int> tagId,
+  Value<int> rowid,
+});
+
+final class $$TransactionTagLinksTableReferences extends BaseReferences<
+    _$BKPDatabase, $TransactionTagLinksTable, TransactionTagLink> {
+  $$TransactionTagLinksTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $TransactionsTable _txIdTable(_$BKPDatabase db) =>
+      db.transactions.createAlias($_aliasNameGenerator(
+          db.transactionTagLinks.txId, db.transactions.id));
+
+  $$TransactionsTableProcessedTableManager get txId {
+    final $_column = $_itemColumn<int>('tx_id')!;
+
+    final manager = $$TransactionsTableTableManager($_db, $_db.transactions)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_txIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $TagsTable _tagIdTable(_$BKPDatabase db) => db.tags.createAlias(
+      $_aliasNameGenerator(db.transactionTagLinks.tagId, db.tags.id));
+
+  $$TagsTableProcessedTableManager get tagId {
+    final $_column = $_itemColumn<int>('tag_id')!;
+
+    final manager = $$TagsTableTableManager($_db, $_db.tags)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_tagIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$TransactionTagLinksTableFilterComposer
+    extends Composer<_$BKPDatabase, $TransactionTagLinksTable> {
+  $$TransactionTagLinksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$TransactionsTableFilterComposer get txId {
+    final $$TransactionsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.txId,
+        referencedTable: $db.transactions,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TransactionsTableFilterComposer(
+              $db: $db,
+              $table: $db.transactions,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$TagsTableFilterComposer get tagId {
+    final $$TagsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.tagId,
+        referencedTable: $db.tags,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TagsTableFilterComposer(
+              $db: $db,
+              $table: $db.tags,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$TransactionTagLinksTableOrderingComposer
+    extends Composer<_$BKPDatabase, $TransactionTagLinksTable> {
+  $$TransactionTagLinksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$TransactionsTableOrderingComposer get txId {
+    final $$TransactionsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.txId,
+        referencedTable: $db.transactions,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TransactionsTableOrderingComposer(
+              $db: $db,
+              $table: $db.transactions,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$TagsTableOrderingComposer get tagId {
+    final $$TagsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.tagId,
+        referencedTable: $db.tags,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TagsTableOrderingComposer(
+              $db: $db,
+              $table: $db.tags,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$TransactionTagLinksTableAnnotationComposer
+    extends Composer<_$BKPDatabase, $TransactionTagLinksTable> {
+  $$TransactionTagLinksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$TransactionsTableAnnotationComposer get txId {
+    final $$TransactionsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.txId,
+        referencedTable: $db.transactions,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TransactionsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.transactions,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$TagsTableAnnotationComposer get tagId {
+    final $$TagsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.tagId,
+        referencedTable: $db.tags,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TagsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.tags,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$TransactionTagLinksTableTableManager extends RootTableManager<
+    _$BKPDatabase,
+    $TransactionTagLinksTable,
+    TransactionTagLink,
+    $$TransactionTagLinksTableFilterComposer,
+    $$TransactionTagLinksTableOrderingComposer,
+    $$TransactionTagLinksTableAnnotationComposer,
+    $$TransactionTagLinksTableCreateCompanionBuilder,
+    $$TransactionTagLinksTableUpdateCompanionBuilder,
+    (TransactionTagLink, $$TransactionTagLinksTableReferences),
+    TransactionTagLink,
+    PrefetchHooks Function({bool txId, bool tagId})> {
+  $$TransactionTagLinksTableTableManager(
+      _$BKPDatabase db, $TransactionTagLinksTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TransactionTagLinksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TransactionTagLinksTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TransactionTagLinksTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> txId = const Value.absent(),
+            Value<int> tagId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TransactionTagLinksCompanion(
+            txId: txId,
+            tagId: tagId,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required int txId,
+            required int tagId,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TransactionTagLinksCompanion.insert(
+            txId: txId,
+            tagId: tagId,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$TransactionTagLinksTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({txId = false, tagId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (txId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.txId,
+                    referencedTable:
+                        $$TransactionTagLinksTableReferences._txIdTable(db),
+                    referencedColumn:
+                        $$TransactionTagLinksTableReferences._txIdTable(db).id,
+                  ) as T;
+                }
+                if (tagId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.tagId,
+                    referencedTable:
+                        $$TransactionTagLinksTableReferences._tagIdTable(db),
+                    referencedColumn:
+                        $$TransactionTagLinksTableReferences._tagIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$TransactionTagLinksTableProcessedTableManager = ProcessedTableManager<
+    _$BKPDatabase,
+    $TransactionTagLinksTable,
+    TransactionTagLink,
+    $$TransactionTagLinksTableFilterComposer,
+    $$TransactionTagLinksTableOrderingComposer,
+    $$TransactionTagLinksTableAnnotationComposer,
+    $$TransactionTagLinksTableCreateCompanionBuilder,
+    $$TransactionTagLinksTableUpdateCompanionBuilder,
+    (TransactionTagLink, $$TransactionTagLinksTableReferences),
+    TransactionTagLink,
+    PrefetchHooks Function({bool txId, bool tagId})>;
 
 class $BKPDatabaseManager {
   final _$BKPDatabase _db;
@@ -1564,4 +2258,6 @@ class $BKPDatabaseManager {
   $$TagsTableTableManager get tags => $$TagsTableTableManager(_db, _db.tags);
   $$TransactionsTableTableManager get transactions =>
       $$TransactionsTableTableManager(_db, _db.transactions);
+  $$TransactionTagLinksTableTableManager get transactionTagLinks =>
+      $$TransactionTagLinksTableTableManager(_db, _db.transactionTagLinks);
 }

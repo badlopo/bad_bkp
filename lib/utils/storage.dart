@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,18 +44,16 @@ abstract class StorageUtils {
   static Directory getDirectoryOfStorage(StorageType type) =>
       Directory(join(root.path, type.name));
 
+  /// This function is idempotent.
+  ///
   /// save file as transaction snapshot file
-  /// at `<root>/transactionSnapshot/<year>/<transactionId>.<extension>`.
-  static Future<File> saveTransactionSnapshot({
-    required File file,
-    required int txId,
-    required int txYear,
-  }) async {
+  /// at `<root>/transactionSnapshot/<current_year>/<file_md5>.<extension>`.
+  static Future<File> saveTransactionSnapshot(File file) async {
     final target = File(setExtension(
       join(
         getDirectoryOfStorage(StorageType.transactionSnapshot).path,
-        '$txYear',
-        '$txId',
+        '${DateTime.now().year}',
+        md5.convert(await file.readAsBytes()).toString(),
       ),
       extension(file.path),
     ));

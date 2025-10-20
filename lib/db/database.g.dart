@@ -543,6 +543,11 @@ class $TransactionsTable extends Transactions
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
       'description', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _timeMeta = const VerificationMeta('time');
+  @override
+  late final GeneratedColumn<DateTime> time = GeneratedColumn<DateTime>(
+      'time', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
   static const VerificationMeta _categoryIdMeta =
       const VerificationMeta('categoryId');
   @override
@@ -552,19 +557,15 @@ class $TransactionsTable extends Transactions
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES categories (id) ON DELETE SET NULL'));
-  static const VerificationMeta _timeMeta = const VerificationMeta('time');
   @override
-  late final GeneratedColumn<DateTime> time = GeneratedColumn<DateTime>(
-      'time', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  @override
-  late final GeneratedColumnWithTypeConverter<File?, String> snapshot =
-      GeneratedColumn<String>('snapshot', aliasedName, true,
-              type: DriftSqlType.string, requiredDuringInsert: false)
-          .withConverter<File?>($TransactionsTable.$convertersnapshotn);
+  late final GeneratedColumnWithTypeConverter<Iterable<File>, String>
+      snapshots = GeneratedColumn<String>('snapshots', aliasedName, false,
+              type: DriftSqlType.string, requiredDuringInsert: true)
+          .withConverter<Iterable<File>>(
+              $TransactionsTable.$convertersnapshots);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, amount, description, categoryId, time, snapshot];
+      [id, amount, description, time, categoryId, snapshots];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -592,17 +593,17 @@ class $TransactionsTable extends Transactions
     } else if (isInserting) {
       context.missing(_descriptionMeta);
     }
-    if (data.containsKey('category_id')) {
-      context.handle(
-          _categoryIdMeta,
-          categoryId.isAcceptableOrUnknown(
-              data['category_id']!, _categoryIdMeta));
-    }
     if (data.containsKey('time')) {
       context.handle(
           _timeMeta, time.isAcceptableOrUnknown(data['time']!, _timeMeta));
     } else if (isInserting) {
       context.missing(_timeMeta);
+    }
+    if (data.containsKey('category_id')) {
+      context.handle(
+          _categoryIdMeta,
+          categoryId.isAcceptableOrUnknown(
+              data['category_id']!, _categoryIdMeta));
     }
     return context;
   }
@@ -619,13 +620,13 @@ class $TransactionsTable extends Transactions
           .read(DriftSqlType.int, data['${effectivePrefix}amount'])!,
       description: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
-      categoryId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}category_id']),
       time: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}time'])!,
-      snapshot: $TransactionsTable.$convertersnapshotn.fromSql(attachedDatabase
+      categoryId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}category_id']),
+      snapshots: $TransactionsTable.$convertersnapshots.fromSql(attachedDatabase
           .typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}snapshot'])),
+          .read(DriftSqlType.string, data['${effectivePrefix}snapshots'])!),
     );
   }
 
@@ -634,38 +635,37 @@ class $TransactionsTable extends Transactions
     return $TransactionsTable(attachedDatabase, alias);
   }
 
-  static TypeConverter<File, String> $convertersnapshot = const FileConverter();
-  static TypeConverter<File?, String?> $convertersnapshotn =
-      NullAwareTypeConverter.wrap($convertersnapshot);
+  static TypeConverter<Iterable<File>, String> $convertersnapshots =
+      MultiFileConverter();
 }
 
 class Transaction extends DataClass implements Insertable<Transaction> {
   final int id;
   final int amount;
   final String description;
-  final int? categoryId;
   final DateTime time;
-  final File? snapshot;
+  final int? categoryId;
+  final Iterable<File> snapshots;
   const Transaction(
       {required this.id,
       required this.amount,
       required this.description,
-      this.categoryId,
       required this.time,
-      this.snapshot});
+      this.categoryId,
+      required this.snapshots});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['amount'] = Variable<int>(amount);
     map['description'] = Variable<String>(description);
+    map['time'] = Variable<DateTime>(time);
     if (!nullToAbsent || categoryId != null) {
       map['category_id'] = Variable<int>(categoryId);
     }
-    map['time'] = Variable<DateTime>(time);
-    if (!nullToAbsent || snapshot != null) {
-      map['snapshot'] = Variable<String>(
-          $TransactionsTable.$convertersnapshotn.toSql(snapshot));
+    {
+      map['snapshots'] = Variable<String>(
+          $TransactionsTable.$convertersnapshots.toSql(snapshots));
     }
     return map;
   }
@@ -675,13 +675,11 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       id: Value(id),
       amount: Value(amount),
       description: Value(description),
+      time: Value(time),
       categoryId: categoryId == null && nullToAbsent
           ? const Value.absent()
           : Value(categoryId),
-      time: Value(time),
-      snapshot: snapshot == null && nullToAbsent
-          ? const Value.absent()
-          : Value(snapshot),
+      snapshots: Value(snapshots),
     );
   }
 
@@ -692,9 +690,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       id: serializer.fromJson<int>(json['id']),
       amount: serializer.fromJson<int>(json['amount']),
       description: serializer.fromJson<String>(json['description']),
-      categoryId: serializer.fromJson<int?>(json['categoryId']),
       time: serializer.fromJson<DateTime>(json['time']),
-      snapshot: serializer.fromJson<File?>(json['snapshot']),
+      categoryId: serializer.fromJson<int?>(json['categoryId']),
+      snapshots: serializer.fromJson<Iterable<File>>(json['snapshots']),
     );
   }
   @override
@@ -704,9 +702,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       'id': serializer.toJson<int>(id),
       'amount': serializer.toJson<int>(amount),
       'description': serializer.toJson<String>(description),
-      'categoryId': serializer.toJson<int?>(categoryId),
       'time': serializer.toJson<DateTime>(time),
-      'snapshot': serializer.toJson<File?>(snapshot),
+      'categoryId': serializer.toJson<int?>(categoryId),
+      'snapshots': serializer.toJson<Iterable<File>>(snapshots),
     };
   }
 
@@ -714,16 +712,16 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           {int? id,
           int? amount,
           String? description,
-          Value<int?> categoryId = const Value.absent(),
           DateTime? time,
-          Value<File?> snapshot = const Value.absent()}) =>
+          Value<int?> categoryId = const Value.absent(),
+          Iterable<File>? snapshots}) =>
       Transaction(
         id: id ?? this.id,
         amount: amount ?? this.amount,
         description: description ?? this.description,
-        categoryId: categoryId.present ? categoryId.value : this.categoryId,
         time: time ?? this.time,
-        snapshot: snapshot.present ? snapshot.value : this.snapshot,
+        categoryId: categoryId.present ? categoryId.value : this.categoryId,
+        snapshots: snapshots ?? this.snapshots,
       );
   Transaction copyWithCompanion(TransactionsCompanion data) {
     return Transaction(
@@ -731,10 +729,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       amount: data.amount.present ? data.amount.value : this.amount,
       description:
           data.description.present ? data.description.value : this.description,
+      time: data.time.present ? data.time.value : this.time,
       categoryId:
           data.categoryId.present ? data.categoryId.value : this.categoryId,
-      time: data.time.present ? data.time.value : this.time,
-      snapshot: data.snapshot.present ? data.snapshot.value : this.snapshot,
+      snapshots: data.snapshots.present ? data.snapshots.value : this.snapshots,
     );
   }
 
@@ -744,16 +742,16 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           ..write('id: $id, ')
           ..write('amount: $amount, ')
           ..write('description: $description, ')
-          ..write('categoryId: $categoryId, ')
           ..write('time: $time, ')
-          ..write('snapshot: $snapshot')
+          ..write('categoryId: $categoryId, ')
+          ..write('snapshots: $snapshots')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode =>
-      Object.hash(id, amount, description, categoryId, time, snapshot);
+      Object.hash(id, amount, description, time, categoryId, snapshots);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -761,51 +759,52 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           other.id == this.id &&
           other.amount == this.amount &&
           other.description == this.description &&
-          other.categoryId == this.categoryId &&
           other.time == this.time &&
-          other.snapshot == this.snapshot);
+          other.categoryId == this.categoryId &&
+          other.snapshots == this.snapshots);
 }
 
 class TransactionsCompanion extends UpdateCompanion<Transaction> {
   final Value<int> id;
   final Value<int> amount;
   final Value<String> description;
-  final Value<int?> categoryId;
   final Value<DateTime> time;
-  final Value<File?> snapshot;
+  final Value<int?> categoryId;
+  final Value<Iterable<File>> snapshots;
   const TransactionsCompanion({
     this.id = const Value.absent(),
     this.amount = const Value.absent(),
     this.description = const Value.absent(),
-    this.categoryId = const Value.absent(),
     this.time = const Value.absent(),
-    this.snapshot = const Value.absent(),
+    this.categoryId = const Value.absent(),
+    this.snapshots = const Value.absent(),
   });
   TransactionsCompanion.insert({
     this.id = const Value.absent(),
     required int amount,
     required String description,
-    this.categoryId = const Value.absent(),
     required DateTime time,
-    this.snapshot = const Value.absent(),
+    this.categoryId = const Value.absent(),
+    required Iterable<File> snapshots,
   })  : amount = Value(amount),
         description = Value(description),
-        time = Value(time);
+        time = Value(time),
+        snapshots = Value(snapshots);
   static Insertable<Transaction> custom({
     Expression<int>? id,
     Expression<int>? amount,
     Expression<String>? description,
-    Expression<int>? categoryId,
     Expression<DateTime>? time,
-    Expression<String>? snapshot,
+    Expression<int>? categoryId,
+    Expression<String>? snapshots,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (amount != null) 'amount': amount,
       if (description != null) 'description': description,
-      if (categoryId != null) 'category_id': categoryId,
       if (time != null) 'time': time,
-      if (snapshot != null) 'snapshot': snapshot,
+      if (categoryId != null) 'category_id': categoryId,
+      if (snapshots != null) 'snapshots': snapshots,
     });
   }
 
@@ -813,16 +812,16 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       {Value<int>? id,
       Value<int>? amount,
       Value<String>? description,
-      Value<int?>? categoryId,
       Value<DateTime>? time,
-      Value<File?>? snapshot}) {
+      Value<int?>? categoryId,
+      Value<Iterable<File>>? snapshots}) {
     return TransactionsCompanion(
       id: id ?? this.id,
       amount: amount ?? this.amount,
       description: description ?? this.description,
-      categoryId: categoryId ?? this.categoryId,
       time: time ?? this.time,
-      snapshot: snapshot ?? this.snapshot,
+      categoryId: categoryId ?? this.categoryId,
+      snapshots: snapshots ?? this.snapshots,
     );
   }
 
@@ -838,15 +837,15 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     if (description.present) {
       map['description'] = Variable<String>(description.value);
     }
-    if (categoryId.present) {
-      map['category_id'] = Variable<int>(categoryId.value);
-    }
     if (time.present) {
       map['time'] = Variable<DateTime>(time.value);
     }
-    if (snapshot.present) {
-      map['snapshot'] = Variable<String>(
-          $TransactionsTable.$convertersnapshotn.toSql(snapshot.value));
+    if (categoryId.present) {
+      map['category_id'] = Variable<int>(categoryId.value);
+    }
+    if (snapshots.present) {
+      map['snapshots'] = Variable<String>(
+          $TransactionsTable.$convertersnapshots.toSql(snapshots.value));
     }
     return map;
   }
@@ -857,9 +856,9 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
           ..write('id: $id, ')
           ..write('amount: $amount, ')
           ..write('description: $description, ')
-          ..write('categoryId: $categoryId, ')
           ..write('time: $time, ')
-          ..write('snapshot: $snapshot')
+          ..write('categoryId: $categoryId, ')
+          ..write('snapshots: $snapshots')
           ..write(')'))
         .toString();
   }
@@ -1580,18 +1579,18 @@ typedef $$TransactionsTableCreateCompanionBuilder = TransactionsCompanion
   Value<int> id,
   required int amount,
   required String description,
-  Value<int?> categoryId,
   required DateTime time,
-  Value<File?> snapshot,
+  Value<int?> categoryId,
+  required Iterable<File> snapshots,
 });
 typedef $$TransactionsTableUpdateCompanionBuilder = TransactionsCompanion
     Function({
   Value<int> id,
   Value<int> amount,
   Value<String> description,
-  Value<int?> categoryId,
   Value<DateTime> time,
-  Value<File?> snapshot,
+  Value<int?> categoryId,
+  Value<Iterable<File>> snapshots,
 });
 
 final class $$TransactionsTableReferences
@@ -1653,9 +1652,9 @@ class $$TransactionsTableFilterComposer
   ColumnFilters<DateTime> get time => $composableBuilder(
       column: $table.time, builder: (column) => ColumnFilters(column));
 
-  ColumnWithTypeConverterFilters<File?, File, String> get snapshot =>
-      $composableBuilder(
-          column: $table.snapshot,
+  ColumnWithTypeConverterFilters<Iterable<File>, Iterable<File>, String>
+      get snapshots => $composableBuilder(
+          column: $table.snapshots,
           builder: (column) => ColumnWithTypeConverterFilters(column));
 
   $$CategoriesTableFilterComposer get categoryId {
@@ -1721,8 +1720,8 @@ class $$TransactionsTableOrderingComposer
   ColumnOrderings<DateTime> get time => $composableBuilder(
       column: $table.time, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get snapshot => $composableBuilder(
-      column: $table.snapshot, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get snapshots => $composableBuilder(
+      column: $table.snapshots, builder: (column) => ColumnOrderings(column));
 
   $$CategoriesTableOrderingComposer get categoryId {
     final $$CategoriesTableOrderingComposer composer = $composerBuilder(
@@ -1766,8 +1765,8 @@ class $$TransactionsTableAnnotationComposer
   GeneratedColumn<DateTime> get time =>
       $composableBuilder(column: $table.time, builder: (column) => column);
 
-  GeneratedColumnWithTypeConverter<File?, String> get snapshot =>
-      $composableBuilder(column: $table.snapshot, builder: (column) => column);
+  GeneratedColumnWithTypeConverter<Iterable<File>, String> get snapshots =>
+      $composableBuilder(column: $table.snapshots, builder: (column) => column);
 
   $$CategoriesTableAnnotationComposer get categoryId {
     final $$CategoriesTableAnnotationComposer composer = $composerBuilder(
@@ -1839,33 +1838,33 @@ class $$TransactionsTableTableManager extends RootTableManager<
             Value<int> id = const Value.absent(),
             Value<int> amount = const Value.absent(),
             Value<String> description = const Value.absent(),
-            Value<int?> categoryId = const Value.absent(),
             Value<DateTime> time = const Value.absent(),
-            Value<File?> snapshot = const Value.absent(),
+            Value<int?> categoryId = const Value.absent(),
+            Value<Iterable<File>> snapshots = const Value.absent(),
           }) =>
               TransactionsCompanion(
             id: id,
             amount: amount,
             description: description,
-            categoryId: categoryId,
             time: time,
-            snapshot: snapshot,
+            categoryId: categoryId,
+            snapshots: snapshots,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required int amount,
             required String description,
-            Value<int?> categoryId = const Value.absent(),
             required DateTime time,
-            Value<File?> snapshot = const Value.absent(),
+            Value<int?> categoryId = const Value.absent(),
+            required Iterable<File> snapshots,
           }) =>
               TransactionsCompanion.insert(
             id: id,
             amount: amount,
             description: description,
-            categoryId: categoryId,
             time: time,
-            snapshot: snapshot,
+            categoryId: categoryId,
+            snapshots: snapshots,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (

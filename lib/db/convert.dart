@@ -28,12 +28,26 @@ class IconDataConverter extends TypeConverter<IconData, String> {
       '${value.codePoint}:${value.fontFamily ?? ''}:${value.fontPackage ?? ''}';
 }
 
-class FileConverter extends TypeConverter<File, String> {
-  const FileConverter();
+class SingleFileConverter extends TypeConverter<File, String> {
+  const SingleFileConverter();
 
   @override
   File fromSql(String fromDb) => File(fromDb);
 
   @override
   String toSql(File value) => value.path;
+}
+
+/// NOTE: since we ensure the path of file will not contains the character ';',
+/// so we use this as separator here.
+class MultiFileConverter extends TypeConverter<Iterable<File>, String> {
+  const MultiFileConverter();
+
+  @override
+  Iterable<File> fromSql(String fromDb) =>
+      fromDb.split(';').map((path) => File(path));
+
+  @override
+  String toSql(Iterable<File> value) =>
+      value.map((file) => file.path).join(';');
 }

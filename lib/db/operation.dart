@@ -108,21 +108,26 @@ extension TransactionExt on BKPDatabase {
     required String description,
     int? categoryId,
     required DateTime time,
-    File? snapshot,
+    Set<File> snapshotFiles = const {},
     Set<int> tagIds = const {},
   }) async {
     return transaction(
       () async {
+        // 1. transaction:
+        // create a new row of the transaction.
         final tx = await into(transactions).insertReturning(
           TransactionsCompanion.insert(
             amount: amount,
             description: description,
             categoryId: Value(categoryId),
             time: time,
-            snapshot: Value(snapshot),
+            snapshots: snapshotFiles,
           ),
         );
 
+        // 2. tags:
+        // since tags are created and deleted during form creation,
+        // we only need to add rows of link.
         await transactionTagLinks.insertAll(
           tagIds.map((tagId) =>
               TransactionTagLinksCompanion.insert(txId: tx.id, tagId: tagId)),

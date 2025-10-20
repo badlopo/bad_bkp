@@ -1,3 +1,4 @@
+import 'package:bookkeeping/components/hr.dart';
 import 'package:bookkeeping/components/indicator.dart';
 import 'package:bookkeeping/components/refreshable.dart';
 import 'package:bookkeeping/constants/tunnel.dart';
@@ -112,7 +113,7 @@ class _CategoryHomePageState extends State<CategoryHomePage>
               child: BKPRefreshable(
                 onRefresh: reloadPage,
                 onLoad: nextPage,
-                child: ListView.builder(
+                child: ListView.separated(
                   itemCount: list.length,
                   itemBuilder: (_, index) {
                     final category = list[index];
@@ -128,6 +129,7 @@ class _CategoryHomePageState extends State<CategoryHomePage>
                       trailing: CupertinoListTileChevron(),
                     );
                   },
+                  separatorBuilder: (_, index) => Hr(),
                 ),
               ),
             ),

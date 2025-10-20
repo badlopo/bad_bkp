@@ -29,6 +29,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   bot_toast:
+  crypto:
   cupertino_calendar_picker:
   drift:
   drift_flutter:
@@ -46,10 +47,9 @@ dependencies:
   intl:
   image_picker:
   loading_animation_widget:
-
-
   path:
   path_provider:
+  uuid:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

@@ -5,6 +5,7 @@ import 'package:bookkeeping/pages/category/creation.dart';
 import 'package:bookkeeping/pages/category/detail.dart';
 import 'package:bookkeeping/pages/home/home.dart';
 import 'package:bookkeeping/pages/misc/icon_picker.dart';
+import 'package:bookkeeping/pages/transaction/creation.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,6 +25,11 @@ abstract class RouteNames {
   /// Returns: `bool` 是否有修改行为 (包括编辑、删除)
   static const categoryDetail = 'category-detail';
 
+  /// 新建交易
+  ///
+  /// Returns: `bool` 是否有创建行为
+  static const transactionCreation = 'transaction-creation';
+
   /// 图标选择
   ///
   /// Parameters:
@@ -38,19 +44,24 @@ final router = GoRouter(
     GoRoute(
       name: RouteNames.home,
       path: '/home',
-      onExit: (context, state) => false,
-      builder: (context, state) => HomePage(),
+      onExit: (ctx, state) => false,
+      builder: (ctx, state) => const HomePage(),
     ),
     GoRoute(
       name: RouteNames.categoryCreation,
       path: '/category/creation',
-      builder: (ctx, state) => CategoryCreationPage(),
+      builder: (ctx, state) => const CategoryCreationPage(),
     ),
     GoRoute(
       name: RouteNames.categoryDetail,
       path: '/category/detail',
       builder: (ctx, state) =>
           CategoryDetailPage(category: state.extra as Category),
+    ),
+    GoRoute(
+      name: RouteNames.transactionCreation,
+      path: '/transaction/creation',
+      builder: (ctx, state) => const TransactionCreationPage(),
     ),
     GoRoute(
       name: RouteNames.iconPicker,

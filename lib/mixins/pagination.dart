@@ -42,7 +42,6 @@ mixin PaginatedQueryMixin<T extends StatefulWidget, Item> on State<T> {
     pageNo = 1;
     isEnd = false;
     await nextPage();
-    ToastUtils.success('Refreshed');
   }
 
   Future<void> handleFilter(String s) {

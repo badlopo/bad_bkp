@@ -25,6 +25,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final botToastBuilder = BotToastInit();
+
     return ListenableBuilder(
       listenable: bkpTheme,
       builder: (context, child) => CupertinoApp.router(
@@ -39,7 +41,12 @@ class MyApp extends StatelessWidget {
           primaryColor: bkpTheme.themeColor.color,
         ),
         routerConfig: router,
-        builder: BotToastInit(),
+        builder: (context, child) {
+          return botToastBuilder(
+            context,
+            MediaQuery.withNoTextScaling(child: child!),
+          );
+        },
       ),
     );
   }

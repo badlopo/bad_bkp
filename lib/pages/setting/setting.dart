@@ -1,6 +1,8 @@
 import 'package:bookkeeping/constants/color.dart';
+import 'package:bookkeeping/route/route.dart';
 import 'package:bookkeeping/services/theme.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -83,14 +85,12 @@ class _SettingPageState extends State<SettingPage> {
             ],
           ),
           CupertinoFormSection.insetGrouped(
-            header: Text('Storage'),
+            header: Text('General'),
             children: [
               CupertinoListTile(
-                title: Text('Storage management'),
+                title: Text('Storage'),
                 trailing: const CupertinoListTileChevron(),
-                onTap: () {
-                  // TODO: storage management
-                },
+                onTap: () => context.pushNamed(RouteNames.storage),
               ),
             ],
           ),

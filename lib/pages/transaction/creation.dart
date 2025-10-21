@@ -4,7 +4,7 @@ import 'package:bookkeeping/components/indicator.dart';
 import 'package:bookkeeping/constants/constraint.dart';
 import 'package:bookkeeping/db/database.dart';
 import 'package:bookkeeping/extensions/datetime.dart';
-import 'package:bookkeeping/pages/category/_shared/category_picker.dart';
+import 'package:bookkeeping/pages/transaction/_shared/category_picker.dart';
 import 'package:bookkeeping/utils/image.dart';
 import 'package:bookkeeping/utils/storage.dart';
 import 'package:bookkeeping/utils/toast.dart';

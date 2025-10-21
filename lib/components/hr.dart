@@ -5,9 +5,15 @@ class Hr extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 1,
-      color: CupertinoColors.separator.resolveFrom(context),
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border.fromBorderSide(
+          BorderSide(
+            width: 0,
+            color: CupertinoColors.separator.resolveFrom(context),
+          ),
+        ),
+      ),
     );
   }
 }

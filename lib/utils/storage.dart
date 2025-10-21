@@ -21,6 +21,18 @@ enum KVType {
   theme,
 }
 
+Future<int> _getSizeOfDirectoryInBytes(Directory directory) async {
+  int count = 0;
+  for (final item in directory.listSync(followLinks: false)) {
+    if (item is File) {
+      count += await item.length();
+    } else if (item is Directory) {
+      count += await _getSizeOfDirectoryInBytes(item);
+    }
+  }
+  return count;
+}
+
 abstract class StorageUtils {
   static Directory? _root;
 
@@ -43,6 +55,9 @@ abstract class StorageUtils {
 
   static Directory getDirectoryOfStorage(StorageType type) =>
       Directory(join(root.path, type.name));
+
+  static Future<int> getSizeOfStorageInBytes(StorageType type) =>
+      _getSizeOfDirectoryInBytes(getDirectoryOfStorage(type));
 
   /// This function is idempotent.
   ///

@@ -58,12 +58,13 @@ class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
+      backgroundColor: CupertinoColors.systemGroupedBackground,
       navigationBar: CupertinoNavigationBar(middle: Text('Settings')),
       child: ListView(
         physics: ClampingScrollPhysics(),
         children: [
           CupertinoFormSection.insetGrouped(
-            header: Text('Preference'),
+            header: Text('Preferences'),
             children: [
               CupertinoListTile(
                 title: Text('Theme color'),

@@ -393,7 +393,10 @@ class _TransactionCreationPage extends State<TransactionCreationPage> {
                   title: Text('Type'),
                   trailing: CupertinoSlidingSegmentedControl(
                     groupValue: isIncome,
-                    children: {true: Text('Income'), false: Text('Expense')},
+                    children: {
+                      true: Text('Income'),
+                      false: Text('Expenditure')
+                    },
                     onValueChanged: (v) {
                       setState(() {
                         isIncome = v!;

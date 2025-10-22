@@ -363,7 +363,6 @@ class _TransactionCreationPage extends State<TransactionCreationPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      resizeToAvoidBottomInset: false,
       backgroundColor: CupertinoColors.systemGroupedBackground,
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoColors.systemGroupedBackground,

@@ -44,8 +44,10 @@ class MultiFileConverter extends TypeConverter<Iterable<File>, String> {
   const MultiFileConverter();
 
   @override
-  Iterable<File> fromSql(String fromDb) =>
-      fromDb.split(';').map((path) => File(path));
+  Iterable<File> fromSql(String fromDb) => fromDb
+      .split(';')
+      .where((path) => path.isNotEmpty)
+      .map((path) => File(path));
 
   @override
   String toSql(Iterable<File> value) =>

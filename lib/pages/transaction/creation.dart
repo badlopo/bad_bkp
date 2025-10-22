@@ -461,6 +461,7 @@ class _TransactionCreationPage extends State<TransactionCreationPage> {
                     maximumDateTime: DateTime(2099, 12, 31),
                     initialDateTime: time,
                     formatter: (d) => d.formatted,
+                    onDateTimeChanged: (t) => time = t,
                   ),
                 ),
               ],

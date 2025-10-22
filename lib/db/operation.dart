@@ -137,7 +137,28 @@ extension TransactionExt on BKPDatabase {
     );
   }
 
-  // TODO: getTransactions
+  /// 获取所有发生交易的'年月'
+  Future<List<YearMonth>> getTransactionYearMonths() async {
+    return customSelect(
+            "SELECT DISTINCT strftime('%Y-%m', time, 'unixepoch', 'localtime') as ym FROM transactions ORDER BY ym DESC")
+        .map((r) {
+      final ym = r.read<String>('ym').split('-');
+      return YearMonth(int.parse(ym[0]), int.parse(ym[1]));
+    }).get();
+  }
+
+  /// 按时间范围查询
+  Future<List<Transaction>> getTransactionsByTimeRange({
+    required DateTime begin,
+    required DateTime end,
+  }) {
+    final query = select(transactions)
+      ..where((r) => r.time.isBetweenValues(begin, end))
+      ..orderBy([(r) => OrderingTerm.desc(r.time)]);
+    return query.get();
+  }
+
+  // TODO: getLatestTransactions(int n)
 
   // TODO: updateTransaction
 

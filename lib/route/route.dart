@@ -21,7 +21,7 @@ abstract class RouteNames {
   /// 分类详情
   ///
   /// Parameters:
-  /// - `extra`: [Category]
+  /// - `extra`: [CategoryWithCount]
   ///
   /// Returns: `bool` 是否有修改行为 (包括编辑、删除)
   static const categoryDetail = '/category/detail';
@@ -59,8 +59,10 @@ final router = GoRouter(
     GoRoute(
       name: RouteNames.categoryDetail,
       path: RouteNames.categoryDetail,
-      builder: (ctx, state) =>
-          CategoryDetailPage(category: state.extra as Category),
+      builder: (ctx, state) {
+        final d = state.extra as CategoryWithCount;
+        return CategoryDetailPage(category: d.category, count: d.count);
+      },
     ),
     GoRoute(
       name: RouteNames.transactionCreation,

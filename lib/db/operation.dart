@@ -40,6 +40,50 @@ extension CategoryExt on BKPDatabase {
     return query.get();
   }
 
+  Future<List<CategoryWithCount>> getCategoriesWithCount({
+    String? filter,
+    int pageNo = 1,
+    int pageSize = 20,
+  }) async {
+    final variables = <Variable<Object>>[];
+    String whereClause = '';
+
+    if (filter?.isNotEmpty == true) {
+      final escaped = filter!
+          .replaceAll(r'\', r'\\')
+          .replaceAll('_', r'\_')
+          .replaceAll('%', r'\%');
+      final variable = Variable.withString('%$escaped%');
+
+      whereClause =
+          r"WHERE categories.name LIKE ? ESCAPE '\' OR categories.description LIKE ? ESCAPE '\'";
+      variables.add(variable);
+      variables.add(variable);
+    }
+
+    variables.addAll([
+      Variable.withInt(pageSize),
+      Variable.withInt((pageNo - 1) * pageSize),
+    ]);
+
+    final rows = await customSelect(
+      '''WITH category_tx_count AS (SELECT category_id, COUNT(id) as count
+                           FROM transactions
+                           GROUP BY category_id)
+SELECT categories.*, COALESCE(category_tx_count.count, 0) as tx_count
+FROM categories
+         LEFT JOIN category_tx_count ON categories.id = category_tx_count.category_id
+$whereClause
+ORDER BY categories.created_at DESC
+LIMIT ? OFFSET ?;''',
+      variables: variables,
+    ).get();
+
+    return rows.map((r) {
+      return CategoryWithCount(categories.map(r.data), r.read<int>('tx_count'));
+    }).toList();
+  }
+
   Future<void> updateCategory(
     int id, {
     required String name,

@@ -13,6 +13,8 @@ part 'convert.dart';
 
 part 'tables.dart';
 
+part 'models.dart';
+
 part 'operation.dart';
 
 QueryExecutor _openConnection() {

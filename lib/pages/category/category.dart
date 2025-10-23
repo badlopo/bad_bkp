@@ -19,7 +19,7 @@ class CategoryHomePage extends StatefulWidget {
 class _CategoryHomePageState extends State<CategoryHomePage>
     with
         AutomaticKeepAliveClientMixin,
-        PaginatedQueryMixin<CategoryHomePage, Category>,
+        PaginatedQueryMixin<CategoryHomePage, CategoryWithCount>,
         SingleTunnelListenerMixin<CategoryHomePage, Symbol> {
   @override
   bool get wantKeepAlive => true;
@@ -35,8 +35,8 @@ class _CategoryHomePageState extends State<CategoryHomePage>
   final TextEditingController controller = TextEditingController();
 
   @override
-  Future<Iterable<Category>?> fetcher() {
-    return BKPDatabase.instance.getCategories(
+  Future<Iterable<CategoryWithCount>?> fetcher() {
+    return BKPDatabase.instance.getCategoriesWithCount(
       filter: filter,
       pageNo: pageNo,
       pageSize: pageSize,
@@ -48,9 +48,8 @@ class _CategoryHomePageState extends State<CategoryHomePage>
     if (r == true) reloadPage();
   }
 
-  void handleToCategoryDetail(Category category) async {
-    final r =
-        await context.pushNamed(RouteNames.categoryDetail, extra: category);
+  void handleToCategoryDetail(CategoryWithCount d) async {
+    final r = await context.pushNamed(RouteNames.categoryDetail, extra: d);
     if (r == true) reloadPage();
   }
 
@@ -116,16 +115,18 @@ class _CategoryHomePageState extends State<CategoryHomePage>
                 child: ListView.separated(
                   itemCount: list.length,
                   itemBuilder: (_, index) {
-                    final category = list[index];
+                    final d = list[index];
+                    final category = d.category;
 
                     return CupertinoListTile(
                       padding: EdgeInsets.zero,
-                      onTap: () => handleToCategoryDetail(category),
+                      onTap: () => handleToCategoryDetail(d),
                       title: Text(category.name),
                       subtitle: category.description.isEmpty
                           ? null
                           : Text(category.description),
                       leading: Icon(category.icon, color: category.color.color),
+                      additionalInfo: Text('${d.count}'),
                       trailing: CupertinoListTileChevron(),
                     );
                   },

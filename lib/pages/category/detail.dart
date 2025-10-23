@@ -12,8 +12,13 @@ import 'package:go_router/go_router.dart';
 
 class CategoryDetailPage extends StatefulWidget {
   final Category category;
+  final int count;
 
-  const CategoryDetailPage({super.key, required this.category});
+  const CategoryDetailPage({
+    super.key,
+    required this.category,
+    required this.count,
+  });
 
   @override
   State<CategoryDetailPage> createState() => _CategoryDetailPageState();
@@ -71,8 +76,8 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
           title: Text('Delete category "${widget.category.name}"?'),
-          content: const Text(
-              'This will move the items in that category to "Uncategorized."'),
+          content: Text(
+              'There are ${widget.count} items under that category, this will move those items to "Uncategorized".'),
           actions: [
             CupertinoDialogAction(
               onPressed: () => Navigator.pop(context, false),

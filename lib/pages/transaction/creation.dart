@@ -71,10 +71,7 @@ class _TagSectionState extends State<_TagSection> {
   List<Tag>? tags;
 
   Future<void> getTags() async {
-    final r = await BKPDatabase.instance.getTags(
-      filter: filter,
-      pageSize: null,
-    );
+    final r = await BKPDatabase.instance.getTags(filter);
 
     setState(() {
       tags = r;

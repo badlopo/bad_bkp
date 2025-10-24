@@ -32,13 +32,10 @@ class _TagHomePageState extends State<TagHomePage>
   final TextEditingController controller = TextEditingController();
   String filter = '';
 
-  List<Tag>? tags;
+  List<TagWithCount>? tags;
 
   Future<void> getTags() async {
-    final r = await BKPDatabase.instance.getTags(
-      filter: filter,
-      pageSize: null,
-    );
+    final r = await BKPDatabase.instance.getTagsWithCount(filter);
 
     setState(() {
       tags = r;
@@ -91,17 +88,14 @@ class _TagHomePageState extends State<TagHomePage>
     getTags();
   }
 
-  void handleDeletion(Tag tag) async {
-    // todo: get number of entries associate with this tag
-    final count = 14253;
-
+  void handleDeletion(TagWithCount tag) async {
     final confirm = await showCupertinoDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog(
-          title: Text('Delete tag "${tag.name}"?'),
+          title: Text('Delete tag "${tag.tag.name}"?'),
           content: Text(
-              'There are $count transactions with this tag. Are you sure you want to delete it?'),
+              'There are ${tag.count} transactions with this tag. Are you sure you want to delete it?'),
           actions: [
             CupertinoDialogAction(
               onPressed: () => Navigator.pop(context, false),
@@ -119,7 +113,7 @@ class _TagHomePageState extends State<TagHomePage>
     if (confirm != true) return;
 
     await ToastUtils.loadingWithTxn(() async {
-      await BKPDatabase.instance.deleteTag(tag.id);
+      await BKPDatabase.instance.deleteTag(tag.tag.id);
     });
 
     await getTags();
@@ -214,7 +208,7 @@ class _TagHomePageState extends State<TagHomePage>
                             sizeStyle: CupertinoButtonSize.small,
                             onPressed: null,
                             onLongPress: () => handleDeletion(tag),
-                            child: Text(tag.name),
+                            child: Text('${tag.tag.name} (${tag.count})'),
                           ),
                       ],
                     ),

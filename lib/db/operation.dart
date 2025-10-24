@@ -113,16 +113,8 @@ extension TagExt on BKPDatabase {
     return into(tags).insertReturning(TagsCompanion.insert(name: name));
   }
 
-  Future<List<Tag>> getTags({
-    String? filter,
-    int pageNo = 1,
-    int? pageSize = 20,
-  }) {
+  Future<List<Tag>> getTags([String? filter]) {
     final query = select(tags);
-
-    if (pageSize != null) {
-      query.limit(pageSize, offset: (pageNo - 1) * pageSize);
-    }
 
     if (filter?.isNotEmpty == true) {
       final escaped = filter!
@@ -133,6 +125,39 @@ extension TagExt on BKPDatabase {
     }
 
     return query.get();
+  }
+
+  Future<List<TagWithCount>> getTagsWithCount([String? filter]) async {
+    final variables = <Variable<Object>>[];
+    String whereClause = '';
+
+    if (filter?.isNotEmpty == true) {
+      final escaped = filter!
+          .replaceAll(r'\', r'\\')
+          .replaceAll('_', r'\_')
+          .replaceAll('%', r'\%');
+      final variable = Variable.withString('%$escaped%');
+
+      whereClause = r"WHERE tags.name LIKE ? ESCAPE '\'";
+      variables.add(variable);
+    }
+
+    final rows = await customSelect(
+      '''WITH tag_tx_count AS (SELECT tag_id, COUNT(tx_id) AS count
+                      FROM transaction_tag_links
+                      GROUP BY tag_id)
+SELECT tags.*, COALESCE(tag_tx_count.count, 0) as tx_count
+FROM tags
+         LEFT JOIN tag_tx_count ON tags.id = tag_tx_count.tag_id
+$whereClause
+ORDER BY tags.id;
+    ''',
+      variables: variables,
+    ).get();
+
+    return rows.map((r) {
+      return TagWithCount(tags.map(r.data), r.read<int>('tx_count'));
+    }).toList();
   }
 
   // Future<void> updateTag(int id, {required name}) async {

@@ -36,12 +36,10 @@ class TransactionWithCategory {
   }
 }
 
-class TransactionWithCategoryAndTags {
-  final Transaction tx;
-  final Category? category;
+class TransactionWithCategoryAndTags extends TransactionWithCategory {
   final List<Tag> tags;
 
-  TransactionWithCategoryAndTags(this.tx, this.category, this.tags);
+  TransactionWithCategoryAndTags(super.tx, super.category, this.tags);
 
   @override
   String toString() {

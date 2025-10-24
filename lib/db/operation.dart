@@ -201,53 +201,11 @@ extension TransactionExt on BKPDatabase {
     );
   }
 
-  /// 获取所有发生交易的'年月'
-  Future<List<YearMonth>> getTransactionYearMonths() async {
-    return customSelect(
-            "SELECT DISTINCT strftime('%Y-%m', time, 'unixepoch', 'localtime') as ym FROM transactions ORDER BY ym DESC")
-        .map((r) {
-      final ym = r.read<String>('ym').split('-');
-      return YearMonth(int.parse(ym[0]), int.parse(ym[1]));
-    }).get();
-  }
-
-  Future<List<TransactionWithCategory>> getTransactionsWithCategoryByMonth(
-      YearMonth ym) async {
-    final rows = await customSelect(
-      '''SELECT transactions.id          as 'transactions.id',
-       transactions.amount      as 'transactions.amount',
-       transactions.description as 'transactions.description',
-       transactions.time        as 'transactions.time',
-       transactions.category_id as 'transactions.category_id',
-       transactions.snapshots   as 'transactions.snapshots',
-       categories.id            as 'categories.id',
-       categories.name          as 'categories.name',
-       categories.description   as 'categories.description',
-       categories.icon          as 'categories.icon',
-       categories.color         as 'categories.color',
-       categories.description   as 'categories.description',
-       categories.created_at    as 'categories.created_at'
-FROM transactions
-         LEFT JOIN categories ON categories.id = transactions.category_id
-WHERE transactions.time BETWEEN ? AND ?
-ORDER BY transactions.time DESC;''',
-      variables: [
-        Variable.withInt(ym.beginTime.millisecondsSinceEpoch ~/ 1000),
-        Variable.withInt(ym.endTime.millisecondsSinceEpoch ~/ 1000),
-      ],
-    ).get();
-
-    return rows.map((row) {
-      final tx = transactions.map(row.data, tablePrefix: 'transactions');
-      final category = tx.categoryId == null
-          ? null
-          : categories.map(row.data, tablePrefix: 'categories');
-      return TransactionWithCategory(tx, category);
-    }).toList();
-  }
-
-  Future<List<TransactionWithCategoryAndTags>>
-      getTransactionsWithCategoryAndTagsByMonth(YearMonth ym) async {
+  // TODO: more filter options
+  Future<List<TransactionWithCategoryAndTags>> getTransactions({
+    int pageNo = 1,
+    int pageSize = 20,
+  }) async {
     final rows = await customSelect(
       '''WITH tx_tags AS (SELECT transaction_tag_links.tx_id,
                         json_group_array(json_object('id', tags.id, 'name', tags.name)) AS tx_tags
@@ -271,11 +229,11 @@ SELECT transactions.id          as 'transactions.id',
 FROM transactions
          LEFT JOIN categories ON categories.id = transactions.category_id
          LEFT JOIN tx_tags ON tx_tags.tx_id = transactions.id
-WHERE transactions.time BETWEEN ? AND ?
-ORDER BY transactions.time DESC;''',
+ORDER BY transactions.time DESC
+LIMIT ? OFFSET ?;''',
       variables: [
-        Variable.withInt(ym.beginTime.millisecondsSinceEpoch ~/ 1000),
-        Variable.withInt(ym.endTime.millisecondsSinceEpoch ~/ 1000),
+        Variable.withInt(pageSize),
+        Variable.withInt((pageNo - 1) * pageSize),
       ],
     ).get();
 
@@ -295,7 +253,35 @@ ORDER BY transactions.time DESC;''',
     }).toList();
   }
 
-  // TODO: getLatestTransactions(int n)
+  Future<({int total, int income, int expenditure})> _getStatistic(
+      DateTime start, DateTime end) async {
+    final r = await customSelect(
+      '''SELECT SUM(amount)                                      AS total,
+       SUM(CASE WHEN amount > 0 THEN amount ELSE 0 END) AS income,
+       SUM(CASE WHEN amount < 0 THEN amount ELSE 0 END) AS expenditure
+FROM transactions
+WHERE time BETWEEN ? AND ?;''',
+      variables: [
+        Variable.withInt(start.millisecondsSinceEpoch ~/ 1000),
+        Variable.withInt(end.millisecondsSinceEpoch ~/ 1000),
+      ],
+    ).getSingle();
+
+    return (
+      total: r.data['total'] as int,
+      income: r.data['income'] as int,
+      expenditure: r.data['expenditure'] as int,
+    );
+  }
+
+  Future<({int total, int income, int expenditure})> getStatisticOfRange(
+          DateTimeRange range) =>
+      _getStatistic(range.start, range.end);
+
+  Future<({int total, int income, int expenditure})> getStatisticOfYearMonth(
+          int year, int month) =>
+      _getStatistic(DateTime(year, month),
+          DateTime(year, month + 1).subtract(Duration(microseconds: 1)));
 
   // TODO: updateTransaction
 

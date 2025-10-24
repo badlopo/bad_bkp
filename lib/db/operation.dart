@@ -160,11 +160,6 @@ ORDER BY tags.id;
     }).toList();
   }
 
-  // Future<void> updateTag(int id, {required name}) async {
-  //   final target = update(tags)..where((r) => r.id.equals(id));
-  //   await target.write(TagsCompanion.insert(name: name));
-  // }
-
   Future<void> deleteTag(int id) async {
     final target = delete(tags)..where((r) => r.id.equals(id));
     await target.go();
@@ -216,15 +211,88 @@ extension TransactionExt on BKPDatabase {
     }).get();
   }
 
-  /// 按时间范围查询
-  Future<List<Transaction>> getTransactionsByTimeRange({
-    required DateTime begin,
-    required DateTime end,
-  }) {
-    final query = select(transactions)
-      ..where((r) => r.time.isBetweenValues(begin, end))
-      ..orderBy([(r) => OrderingTerm.desc(r.time)]);
-    return query.get();
+  Future<List<TransactionWithCategory>> getTransactionsWithCategoryByMonth(
+      YearMonth ym) async {
+    final rows = await customSelect(
+      '''SELECT transactions.id          as 'transactions.id',
+       transactions.amount      as 'transactions.amount',
+       transactions.description as 'transactions.description',
+       transactions.time        as 'transactions.time',
+       transactions.category_id as 'transactions.category_id',
+       transactions.snapshots   as 'transactions.snapshots',
+       categories.id            as 'categories.id',
+       categories.name          as 'categories.name',
+       categories.description   as 'categories.description',
+       categories.icon          as 'categories.icon',
+       categories.color         as 'categories.color',
+       categories.description   as 'categories.description',
+       categories.created_at    as 'categories.created_at'
+FROM transactions
+         LEFT JOIN categories ON categories.id = transactions.category_id
+WHERE transactions.time BETWEEN ? AND ?
+ORDER BY transactions.time DESC;''',
+      variables: [
+        Variable.withInt(ym.beginTime.millisecondsSinceEpoch ~/ 1000),
+        Variable.withInt(ym.endTime.millisecondsSinceEpoch ~/ 1000),
+      ],
+    ).get();
+
+    return rows.map((row) {
+      final tx = transactions.map(row.data, tablePrefix: 'transactions');
+      final category = tx.categoryId == null
+          ? null
+          : categories.map(row.data, tablePrefix: 'categories');
+      return TransactionWithCategory(tx, category);
+    }).toList();
+  }
+
+  Future<List<TransactionWithCategoryAndTags>>
+      getTransactionsWithCategoryAndTagsByMonth(YearMonth ym) async {
+    final rows = await customSelect(
+      '''WITH tx_tags AS (SELECT transaction_tag_links.tx_id,
+                        json_group_array(json_object('id', tags.id, 'name', tags.name)) AS tx_tags
+                 FROM transaction_tag_links
+                          LEFT JOIN tags ON transaction_tag_links.tag_id = tags.id
+                 GROUP BY transaction_tag_links.tx_id)
+SELECT transactions.id          as 'transactions.id',
+       transactions.amount      as 'transactions.amount',
+       transactions.description as 'transactions.description',
+       transactions.time        as 'transactions.time',
+       transactions.category_id as 'transactions.category_id',
+       transactions.snapshots   as 'transactions.snapshots',
+       categories.id            as 'categories.id',
+       categories.name          as 'categories.name',
+       categories.description   as 'categories.description',
+       categories.icon          as 'categories.icon',
+       categories.color         as 'categories.color',
+       categories.description   as 'categories.description',
+       categories.created_at    as 'categories.created_at',
+       tx_tags.tx_tags          as 'tags'
+FROM transactions
+         LEFT JOIN categories ON categories.id = transactions.category_id
+         LEFT JOIN tx_tags ON tx_tags.tx_id = transactions.id
+WHERE transactions.time BETWEEN ? AND ?
+ORDER BY transactions.time DESC;''',
+      variables: [
+        Variable.withInt(ym.beginTime.millisecondsSinceEpoch ~/ 1000),
+        Variable.withInt(ym.endTime.millisecondsSinceEpoch ~/ 1000),
+      ],
+    ).get();
+
+    return rows.map((row) {
+      final tx = transactions.map(row.data, tablePrefix: 'transactions');
+      final category = tx.categoryId == null
+          ? null
+          : categories.map(row.data, tablePrefix: 'categories');
+      final tagsJson = row.read<String?>('tags');
+      final tags = tagsJson == null
+          ? <Tag>[]
+          : (jsonDecode(tagsJson) as List)
+              .map((e) => Tag(id: e['id'] as int, name: e['name'] as String))
+              .toList();
+
+      return TransactionWithCategoryAndTags(tx, category, tags);
+    }).toList();
   }
 
   // TODO: getLatestTransactions(int n)

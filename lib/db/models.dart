@@ -8,7 +8,7 @@ class CategoryWithCount {
 
   @override
   String toString() {
-    return '[CategoryWithCount] $category ($count)';
+    return '[CategoryWithCount] <${category.id}> ${category.name} ($count)';
   }
 }
 
@@ -20,6 +20,31 @@ class TagWithCount {
 
   @override
   String toString() {
-    return '[TagWithCount] $tag ($count)';
+    return '[TagWithCount] <${tag.id}> ${tag.name} ($count)';
+  }
+}
+
+class TransactionWithCategory {
+  final Transaction tx;
+  final Category? category;
+
+  TransactionWithCategory(this.tx, this.category);
+
+  @override
+  String toString() {
+    return '[TransactionWithCategory] <${tx.id}> ${tx.amount} (${category?.name ?? 'Uncategorized'})';
+  }
+}
+
+class TransactionWithCategoryAndTags {
+  final Transaction tx;
+  final Category? category;
+  final List<Tag> tags;
+
+  TransactionWithCategoryAndTags(this.tx, this.category, this.tags);
+
+  @override
+  String toString() {
+    return '[TransactionWithCategoryAndTags] <${tx.id}> ${tx.amount} (${category?.name ?? 'Uncategorized'}, ${tags.length} tags)';
   }
 }

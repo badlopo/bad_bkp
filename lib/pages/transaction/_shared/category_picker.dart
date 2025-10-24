@@ -26,7 +26,7 @@ class _CategoryPickerState extends State<CategoryPicker>
   final TextEditingController controller = TextEditingController();
 
   @override
-  Future<Iterable<Category>?> fetcher() {
+  Future<Iterable<Category>?> fetch() {
     return BKPDatabase.instance.getCategories(
       filter: filter,
       pageNo: pageNo,

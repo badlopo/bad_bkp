@@ -35,7 +35,7 @@ class _CategoryHomePageState extends State<CategoryHomePage>
   final TextEditingController controller = TextEditingController();
 
   @override
-  Future<Iterable<CategoryWithCount>?> fetcher() {
+  Future<Iterable<CategoryWithCount>?> fetch() {
     return BKPDatabase.instance.getCategoriesWithCount(
       filter: filter,
       pageNo: pageNo,

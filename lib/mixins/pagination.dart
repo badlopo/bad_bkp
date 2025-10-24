@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 mixin PaginatedQueryMixin<T extends StatefulWidget, Item> on State<T> {
   bool get autoInitialize => true;
 
-  Future<Iterable<Item>?> fetcher();
+  Future<Iterable<Item>?> fetch();
 
   String filter = '';
   int pageNo = 1;
@@ -19,7 +19,7 @@ mixin PaginatedQueryMixin<T extends StatefulWidget, Item> on State<T> {
       return;
     }
 
-    final items = await fetcher();
+    final items = await fetch();
 
     if (items == null) {
       ToastUtils.error('Fail to fetch');

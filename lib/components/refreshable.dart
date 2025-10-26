@@ -19,7 +19,7 @@ class BKPRefreshable extends StatelessWidget {
   Widget build(BuildContext context) {
     return EasyRefresh(
       header: CupertinoHeader(),
-      footer: CupertinoFooter(),
+      footer: CupertinoFooter(infiniteOffset: null),
       onRefresh: onRefresh,
       onLoad: onLoad,
       child: child,

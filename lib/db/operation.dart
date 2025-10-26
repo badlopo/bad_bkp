@@ -1,5 +1,7 @@
 part of 'database.dart';
 
+typedef TxStatistic = ({int total, int income, int expenditure});
+
 extension CategoryExt on BKPDatabase {
   Future<void> createCategory({
     required String name,
@@ -253,8 +255,7 @@ LIMIT ? OFFSET ?;''',
     }).toList();
   }
 
-  Future<({int total, int income, int expenditure})> _getStatistic(
-      DateTime start, DateTime end) async {
+  Future<TxStatistic> _getStatistic(DateTime start, DateTime end) async {
     final r = await customSelect(
       '''SELECT SUM(amount)                                      AS total,
        SUM(CASE WHEN amount > 0 THEN amount ELSE 0 END) AS income,
@@ -274,14 +275,11 @@ WHERE time BETWEEN ? AND ?;''',
     );
   }
 
-  Future<({int total, int income, int expenditure})> getStatisticOfRange(
-          DateTimeRange range) =>
+  Future<TxStatistic> getStatisticOfRange(DateTimeRange range) =>
       _getStatistic(range.start, range.end);
 
-  Future<({int total, int income, int expenditure})> getStatisticOfYearMonth(
-          int year, int month) =>
-      _getStatistic(DateTime(year, month),
-          DateTime(year, month + 1).subtract(Duration(microseconds: 1)));
+  Future<TxStatistic> getStatisticOfYearMonth(YearMonth ym) =>
+      _getStatistic(ym.beginTime, ym.endTime);
 
   // TODO: updateTransaction
 

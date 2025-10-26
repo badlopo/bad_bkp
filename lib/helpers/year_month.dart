@@ -13,6 +13,11 @@ class YearMonth {
     this.month = d.month;
   }
 
+  YearMonth.fromDateTime(DateTime dt) {
+    year = dt.year;
+    month = dt.month;
+  }
+
   bool operator >(YearMonth other) =>
       (year + month / 12) > (other.year + other.month / 12);
 

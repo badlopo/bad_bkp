@@ -76,13 +76,6 @@ class _TransactionCreationPage extends State<TransactionCreationPage> {
     return CupertinoPageScaffold(
       backgroundColor: CupertinoColors.systemGroupedBackground,
       navigationBar: CupertinoNavigationBar(
-        backgroundColor: CupertinoColors.systemGroupedBackground,
-        automaticBackgroundVisibility: false,
-        leading: CupertinoButton(
-          padding: EdgeInsets.zero,
-          onPressed: context.pop,
-          child: Text('Cancel'),
-        ),
         middle: Text('Create transaction'),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,

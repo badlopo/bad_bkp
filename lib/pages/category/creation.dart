@@ -66,13 +66,6 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
       resizeToAvoidBottomInset: false,
       backgroundColor: CupertinoColors.systemGroupedBackground,
       navigationBar: CupertinoNavigationBar(
-        backgroundColor: CupertinoColors.systemGroupedBackground,
-        automaticBackgroundVisibility: false,
-        leading: CupertinoButton(
-          padding: EdgeInsets.zero,
-          onPressed: context.pop,
-          child: Text('Cancel'),
-        ),
         middle: Text('Create category'),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,

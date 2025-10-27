@@ -7,6 +7,40 @@ import 'package:bookkeeping/utils/toast.dart';
 import 'package:bookkeeping/utils/tunnel.dart';
 import 'package:flutter/cupertino.dart';
 
+class _TagChip extends StatelessWidget {
+  final Tag tag;
+  final int count;
+  final VoidCallback onLongPress;
+
+  const _TagChip({
+    required this.tag,
+    required this.count,
+    required this.onLongPress,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = CupertinoTheme.of(context);
+
+    return GestureDetector(
+      onLongPress: onLongPress,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(40)),
+          color: theme.primaryColor.withAlpha(30),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+          child: Text(
+            '${tag.name} ($count)',
+            style: theme.textTheme.actionSmallTextStyle,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class TagHomePage extends StatefulWidget {
   const TagHomePage({super.key});
 
@@ -204,11 +238,10 @@ class _TagHomePageState extends State<TagHomePage>
                       runSpacing: 8,
                       children: [
                         for (final tag in tags!)
-                          CupertinoButton.tinted(
-                            sizeStyle: CupertinoButtonSize.small,
-                            onPressed: null,
+                          _TagChip(
                             onLongPress: () => handleDeletion(tag),
-                            child: Text('${tag.tag.name} (${tag.count})'),
+                            tag: tag.tag,
+                            count: tag.count,
                           ),
                       ],
                     ),

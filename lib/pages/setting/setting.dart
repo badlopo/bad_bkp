@@ -58,7 +58,6 @@ class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      backgroundColor: CupertinoColors.systemGroupedBackground,
       navigationBar: CupertinoNavigationBar(middle: Text('Settings')),
       child: ListView(
         physics: ClampingScrollPhysics(),

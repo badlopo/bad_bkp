@@ -39,6 +39,7 @@ class MyApp extends StatelessWidget {
         theme: CupertinoThemeData(
           brightness: bkpTheme.darkMode ? Brightness.dark : Brightness.light,
           primaryColor: bkpTheme.themeColor.color,
+          scaffoldBackgroundColor: CupertinoColors.systemGroupedBackground,
         ),
         routerConfig: router,
         builder: (context, child) {

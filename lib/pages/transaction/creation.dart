@@ -74,7 +74,6 @@ class _TransactionCreationPage extends State<TransactionCreationPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      backgroundColor: CupertinoColors.systemGroupedBackground,
       navigationBar: CupertinoNavigationBar(
         middle: Text('Create transaction'),
         trailing: CupertinoButton(

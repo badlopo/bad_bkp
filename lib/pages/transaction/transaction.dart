@@ -123,7 +123,7 @@ class _TransactionPageState extends State<TransactionPage>
       if (_isSameYM(result![startIndex].tx.time, row.tx.time)) continue;
 
       // yield previous group
-      yield CupertinoListSection.insetGrouped(
+      yield CupertinoFormSection.insetGrouped(
         header: _buildGroupHeader(
             YearMonth.fromDateTime(result![startIndex].tx.time)),
         children: [
@@ -135,7 +135,7 @@ class _TransactionPageState extends State<TransactionPage>
     }
 
     // yield last group
-    yield CupertinoListSection.insetGrouped(
+    yield CupertinoFormSection.insetGrouped(
       header: _buildGroupHeader(
           YearMonth.fromDateTime(result![startIndex].tx.time)),
       children: [

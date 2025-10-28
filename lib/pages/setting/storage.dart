@@ -58,7 +58,6 @@ class _StoragePageState extends State<StoragePage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      backgroundColor: CupertinoColors.systemGroupedBackground,
       navigationBar: CupertinoNavigationBar(
         middle: Text('Storage'),
         trailing: CupertinoButton(

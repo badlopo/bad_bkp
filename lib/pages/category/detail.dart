@@ -106,7 +106,6 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: CupertinoColors.systemGroupedBackground,
       navigationBar: CupertinoNavigationBar(
         middle: Text('Category detail'),
         trailing: CupertinoButton(
@@ -154,6 +153,14 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                       ),
                     ),
                   ),
+                ),
+                CupertinoTextField.borderless(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  textInputAction: TextInputAction.newline,
+                  minLines: 1,
+                  maxLines: 5,
+                  maxLength: BKPConstraints.transactionDescriptionMaxLength,
+                  placeholder: 'Enter a description for this transaction.',
                 ),
               ],
             ),

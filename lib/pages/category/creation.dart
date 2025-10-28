@@ -64,7 +64,6 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: CupertinoColors.systemGroupedBackground,
       navigationBar: CupertinoNavigationBar(
         middle: Text('Create category'),
         trailing: CupertinoButton(
@@ -78,9 +77,8 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
         child: ListView(
           physics: ClampingScrollPhysics(),
           children: [
-            CupertinoListSection.insetGrouped(
-              dividerMargin: 0,
-              additionalDividerMargin: 0,
+            CupertinoFormSection.insetGrouped(
+              header: Text('Base'),
               children: [
                 CupertinoTextFormFieldRow(
                   textInputAction: TextInputAction.next,
@@ -100,9 +98,8 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
                 ),
               ],
             ),
-            CupertinoListSection.insetGrouped(
-              dividerMargin: 0,
-              additionalDividerMargin: 0,
+            CupertinoFormSection.insetGrouped(
+              header: Text('Icon'),
               children: [
                 CupertinoListTile(
                   title: Text('Icon'),
@@ -110,12 +107,6 @@ class _CategoryCreationPage extends State<CategoryCreationPage> {
                   trailing: CupertinoListTileChevron(),
                   onTap: handleIconSelection,
                 ),
-              ],
-            ),
-            CupertinoListSection.insetGrouped(
-              dividerMargin: 0,
-              additionalDividerMargin: 0,
-              children: [
                 CupertinoListTile(
                   title: Text('Color'),
                   additionalInfo: Text(color.name),

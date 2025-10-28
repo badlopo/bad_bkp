@@ -9,6 +9,9 @@ class UnDraw extends StatelessWidget {
   const UnDraw.noData({super.key, this.width, this.height})
       : assetName = 'assets/undraw/no_data.svg';
 
+  const UnDraw.pageEaten({super.key, this.width, this.height})
+      : assetName = 'assets/undraw/page_eaten.svg';
+
   @override
   Widget build(BuildContext context) {
     return SvgPicture.asset(

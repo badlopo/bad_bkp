@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bookkeeping/components/hr.dart';
 import 'package:bookkeeping/components/indicator.dart';
 import 'package:bookkeeping/components/refreshable.dart';
+import 'package:bookkeeping/components/undraw.dart';
 import 'package:bookkeeping/constants/constraint.dart';
 import 'package:bookkeeping/db/database.dart';
 import 'package:bookkeeping/extensions/datetime.dart';
@@ -157,6 +158,17 @@ class _SnapshotItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final inner = Hero(
+      tag: UniqueKey(),
+      child: Image.file(
+        file,
+        errorBuilder: (context, error, stack) => Padding(
+          padding: EdgeInsets.all(12),
+          child: UnDraw.pageEaten(width: 96),
+        ),
+      ),
+    );
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -173,7 +185,7 @@ class _SnapshotItem extends StatelessWidget {
                   //   onPressed: () {},
                   // ),
                   ),
-              child: Center(child: Image.file(file)),
+              child: Center(child: inner),
             ),
           ),
         );
@@ -192,7 +204,7 @@ class _SnapshotItem extends StatelessWidget {
               ),
             ),
             clipBehavior: Clip.hardEdge,
-            child: Image.file(file),
+            child: inner,
           ),
           Positioned(
             top: 0,

@@ -148,7 +148,7 @@ class _CategorySpecPageState extends State<CategorySpecPage> {
                   initialValue: name,
                   textInputAction: TextInputAction.next,
                   textAlign: TextAlign.right,
-                  autofocus: true,
+                  autofocus: widget.current == null,
                   maxLength: BKPConstraints.categoryNameMaxLength,
                   prefix: Text('Name'),
                   validator: (v) => v?.isNotEmpty == true ? null : 'Required',

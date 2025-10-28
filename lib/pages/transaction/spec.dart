@@ -641,7 +641,6 @@ class _TransactionSpecPageState extends State<TransactionSpecPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      resizeToAvoidBottomInset: false,
       navigationBar: CupertinoNavigationBar(
         middle: widget.current == null
             ? Text('Create transaction')
@@ -688,7 +687,7 @@ class _TransactionSpecPageState extends State<TransactionSpecPage> {
                           : Text(field.errorText!),
                       child: CupertinoTextField.borderless(
                         controller: _amountController,
-                        autofocus: true,
+                        autofocus: widget.current == null,
                         keyboardType: TextInputType.number,
                         textAlign: TextAlign.right,
                         inputFormatters: const [DecimalTextInputFormatter()],

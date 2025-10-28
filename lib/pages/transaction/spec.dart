@@ -584,7 +584,7 @@ class _TransactionSpecPageState extends State<TransactionSpecPage> {
         } else {
           await BKPDatabase.instance.updateTransaction(
             transaction.id,
-            amount: amount,
+            amount: amount * (isIncome ? 1 : -1),
             description: description,
             categoryId: category?.id,
             time: time,
@@ -700,7 +700,8 @@ class _TransactionSpecPageState extends State<TransactionSpecPage> {
                       child: CupertinoTextField.borderless(
                         controller: _amountController,
                         autofocus: widget.current == null,
-                        keyboardType: TextInputType.number,
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
                         textAlign: TextAlign.right,
                         inputFormatters: const [DecimalTextInputFormatter()],
                         onChanged: (s) {

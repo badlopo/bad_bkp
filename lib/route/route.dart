@@ -5,8 +5,7 @@ import 'package:bookkeeping/pages/category/spec.dart';
 import 'package:bookkeeping/pages/home/home.dart';
 import 'package:bookkeeping/pages/misc/icon_picker.dart';
 import 'package:bookkeeping/pages/setting/storage.dart';
-import 'package:bookkeeping/pages/transaction/creation.dart';
-import 'package:bookkeeping/pages/transaction/detail.dart';
+import 'package:bookkeeping/pages/transaction/spec.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,25 +15,22 @@ abstract class RouteNames {
   /// 类别详情
   ///
   /// Parameters:
-  /// - `extra`: [CategoryWithCount?]
+  /// - `extra`: `CategoryWithCount?`
   ///   - [CategoryWithCount]: 编辑类别
   ///   - `null`: 新建类别
   ///
   /// Returns: `bool` 是否有变更行为 (新建、修改、删除)
   static const categorySpec = '/category/spec';
 
-  /// 新建交易
-  ///
-  /// Returns: `bool` 是否有创建行为
-  static const transactionCreation = '/transaction/creation';
-
   /// 交易详情
   ///
   /// Parameters:
-  /// - `extra`: [TransactionWithCategoryAndTags]
+  /// - `extra`: `TransactionWithCategoryAndTags?`
+  ///   - [TransactionWithCategoryAndTags]: 编辑交易
+  ///   - `null`: 新建交易
   ///
-  /// Returns: `bool` 是否有修改行为 (包括编辑、删除)
-  static const transactionDetail = '/transaction/detail';
+  /// Returns: `bool` 是否有变更行为 (新建、修改、删除)
+  static const transactionSpec = '/transaction/spec';
 
   /// 存储管理
   static const storage = '/setting/storage';
@@ -63,21 +59,10 @@ final router = GoRouter(
           CategorySpecPage(current: state.extra as CategoryWithCount?),
     ),
     GoRoute(
-      name: RouteNames.transactionCreation,
-      path: RouteNames.transactionCreation,
-      builder: (ctx, state) => const TransactionCreationPage(),
-    ),
-    GoRoute(
-      name: RouteNames.transactionDetail,
-      path: RouteNames.transactionDetail,
-      builder: (ctx, state) {
-        final d = state.extra as TransactionWithCategoryAndTags;
-        return TransactionDetailPage(
-          transaction: d.tx,
-          category: d.category,
-          tags: d.tags,
-        );
-      },
+      name: RouteNames.transactionSpec,
+      path: RouteNames.transactionSpec,
+      builder: (ctx, state) => TransactionSpecPage(
+          current: state.extra as TransactionWithCategoryAndTags?),
     ),
     GoRoute(
       name: RouteNames.storage,

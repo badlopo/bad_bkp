@@ -21,11 +21,10 @@ class CategorySpecPage extends StatefulWidget {
 class _CategorySpecPageState extends State<CategorySpecPage> {
   final GlobalKey<FormState> _formKey = GlobalKey();
 
-  late String name = widget.current?.category.name ?? '';
-  late String description = widget.current?.category.description ?? '';
-  late BKPColor color = widget.current?.category.color ?? BKPColor.blue();
-  late IconData icon =
-      widget.current?.category.icon ?? CupertinoIcons.collections;
+  String name = '';
+  String description = '';
+  BKPColor color = BKPColor.blue();
+  IconData icon = CupertinoIcons.collections;
 
   void handleIconSelection() async {
     final newIcon = await context.pushNamed<BKPIcon>(
@@ -108,6 +107,19 @@ class _CategorySpecPageState extends State<CategorySpecPage> {
 
     // ignore: use_build_context_synchronously
     context.pop(true);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.current != null) {
+      final category = widget.current!.category;
+      name = category.name;
+      description = category.description;
+      color = category.color;
+      icon = category.icon;
+    }
   }
 
   @override

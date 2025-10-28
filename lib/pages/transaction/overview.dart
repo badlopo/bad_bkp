@@ -22,15 +22,18 @@ String _formatAmount(int amount) {
   return isNegative ? '-$formatted' : '+$formatted';
 }
 
-class TransactionPage extends StatefulWidget {
-  const TransactionPage({super.key});
+class TransactionOverviewPage extends StatefulWidget {
+  const TransactionOverviewPage({super.key});
 
   @override
-  State<TransactionPage> createState() => _TransactionPageState();
+  State<TransactionOverviewPage> createState() =>
+      _TransactionOverviewPageState();
 }
 
-class _TransactionPageState extends State<TransactionPage>
-    with PaginatedQueryMixin<TransactionPage, TransactionWithCategoryAndTags> {
+class _TransactionOverviewPageState extends State<TransactionOverviewPage>
+    with
+        PaginatedQueryMixin<TransactionOverviewPage,
+            TransactionWithCategoryAndTags> {
   final Map<YearMonth, TxStatistic> _monthlyStatistic = {};
 
   Future<void> _getMonthlyStatistic() async {
@@ -67,12 +70,12 @@ class _TransactionPageState extends State<TransactionPage>
   }
 
   Future<void> handleTransactionCreation() async {
-    final r = await context.pushNamed(RouteNames.transactionCreation);
+    final r = await context.pushNamed(RouteNames.transactionSpec);
     if (r == true) reloadPage();
   }
 
   void handleToTransactionDetail(TransactionWithCategoryAndTags d) async {
-    final r = await context.pushNamed(RouteNames.transactionDetail, extra: d);
+    final r = await context.pushNamed(RouteNames.transactionSpec, extra: d);
     if (r == true) reloadPage();
   }
 

@@ -1,7 +1,7 @@
 import 'package:bookkeeping/pages/customs/customs.dart';
 import 'package:bookkeeping/pages/dashboard/dashboard.dart';
 import 'package:bookkeeping/pages/setting/setting.dart';
-import 'package:bookkeeping/pages/transaction/transaction.dart';
+import 'package:bookkeeping/pages/transaction/overview.dart';
 import 'package:flutter/cupertino.dart';
 
 class HomePage extends StatelessWidget {
@@ -34,7 +34,7 @@ class HomePage extends StatelessWidget {
       ),
       tabBuilder: (_, index) => const [
         DashboardPage(),
-        TransactionPage(),
+        TransactionOverviewPage(),
         CustomsPage(),
         SettingPage(),
       ][index],

@@ -275,16 +275,50 @@ WHERE time BETWEEN ? AND ?;''',
     );
   }
 
-  Future<TxStatistic> getStatisticOfRange(DateTimeRange range) =>
-      _getStatistic(range.start, range.end);
+  Future<void> updateTransaction(
+    int id, {
+    required int amount,
+    required String description,
+    required int? categoryId,
+    required DateTime time,
+    required Set<File> snapshots,
+    required Set<int> tagIds,
+  }) async {
+    return transaction(() async {
+      // 1. update transaction
+      final target = update(transactions)..where((r) => r.id.equals(id));
+      await target.write(
+        TransactionsCompanion.insert(
+          amount: amount,
+          description: description,
+          time: time,
+          categoryId: Value.absentIfNull(categoryId),
+          snapshots: snapshots,
+        ),
+      );
 
-  Future<TxStatistic> getStatisticOfYearMonth(YearMonth ym) =>
-      _getStatistic(ym.beginTime, ym.endTime);
+      // 2. delete all existing links
+      final deleteTarget = delete(transactionTagLinks)
+        ..where((r) => r.txId.equals(id));
+      await deleteTarget.go();
 
-  // TODO: updateTransaction
+      // 3. insert new links
+      await transactionTagLinks.insertAll(
+        tagIds.map((tagId) =>
+            TransactionTagLinksCompanion.insert(txId: id, tagId: tagId)),
+        mode: InsertMode.insertOrIgnore,
+      );
+    });
+  }
 
   Future<void> deleteTransaction(int id) async {
     final target = delete(transactions)..where((r) => r.id.equals(id));
     await target.go();
   }
+
+  Future<TxStatistic> getStatisticOfRange(DateTimeRange range) =>
+      _getStatistic(range.start, range.end);
+
+  Future<TxStatistic> getStatisticOfYearMonth(YearMonth ym) =>
+      _getStatistic(ym.beginTime, ym.endTime);
 }

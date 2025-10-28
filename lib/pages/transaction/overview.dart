@@ -186,7 +186,14 @@ class _TransactionOverviewPageState extends State<TransactionOverviewPage>
     }
 
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(middle: Text('Transactions')),
+      navigationBar: CupertinoNavigationBar(
+        middle: Text('Transactions'),
+        trailing: CupertinoButton(
+          padding: EdgeInsets.zero,
+          onPressed: handleTransactionCreation,
+          child: Text('New'),
+        ),
+      ),
       child: SafeArea(
         child: BKPRefreshable(
           onRefresh: reloadPage,

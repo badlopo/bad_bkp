@@ -94,27 +94,27 @@ class _SettingPageState extends State<SettingPage> {
               ),
             ],
           ),
-          CupertinoFormSection.insetGrouped(
-            header: Text('About'),
-            children: [
-              CupertinoListTile(
-                title: Text('Version'),
-                additionalInfo: Text('0.0.1'),
-                trailing: CupertinoListTileChevron(),
-                onTap: () {
-                  // TODO: open in app store
-                },
-              ),
-              CupertinoListTile(
-                title: Text('Feedback'),
-                additionalInfo: Text('Rate or review on the app store'),
-                trailing: const CupertinoListTileChevron(),
-                onTap: () {
-                  // TODO: open in app store
-                },
-              ),
-            ],
-          ),
+          // CupertinoFormSection.insetGrouped(
+          //   header: Text('About'),
+          //   children: [
+          //     CupertinoListTile(
+          //       title: Text('Version'),
+          //       additionalInfo: Text('0.0.1'),
+          //       trailing: CupertinoListTileChevron(),
+          //       onTap: () {
+          //         // TODO: open in app store
+          //       },
+          //     ),
+          //     CupertinoListTile(
+          //       title: Text('Feedback'),
+          //       additionalInfo: Text('Rate or review on the app store'),
+          //       trailing: const CupertinoListTileChevron(),
+          //       onTap: () {
+          //         // TODO: open in app store
+          //       },
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );

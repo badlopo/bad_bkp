@@ -14,10 +14,10 @@ class HomePage extends StatelessWidget {
       tabBar: CupertinoTabBar(
         iconSize: 24,
         items: [
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.chart_pie),
-            label: 'Dashboard',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(CupertinoIcons.chart_pie),
+          //   label: 'Dashboard',
+          // ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.doc_plaintext),
             label: 'Transactions',
@@ -33,7 +33,7 @@ class HomePage extends StatelessWidget {
         ],
       ),
       tabBuilder: (_, index) => const [
-        DashboardPage(),
+        // DashboardPage(),
         TransactionOverviewPage(),
         CustomsPage(),
         SettingPage(),

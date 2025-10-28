@@ -109,3 +109,14 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  background_color_ios: '#ffffff'
+  image_path: assets/launcher/ic_launcher.png
+  # image_path_ios: assets/launcher/ic_launcher_ios.png
+  adaptive_icon_foreground: assets/launcher/ic_launcher.png
+  adaptive_icon_background: '#ffffff'

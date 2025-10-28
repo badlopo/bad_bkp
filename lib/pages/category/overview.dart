@@ -44,12 +44,12 @@ class _CategoryHomePageState extends State<CategoryOverviewPage>
   }
 
   void handleCategoryCreation() async {
-    final r = await context.pushNamed(RouteNames.categoryCreation);
+    final r = await context.pushNamed(RouteNames.categorySpec);
     if (r == true) reloadPage();
   }
 
   void handleToCategoryDetail(CategoryWithCount d) async {
-    final r = await context.pushNamed(RouteNames.categoryDetail, extra: d);
+    final r = await context.pushNamed(RouteNames.categorySpec, extra: d);
     if (r == true) reloadPage();
   }
 

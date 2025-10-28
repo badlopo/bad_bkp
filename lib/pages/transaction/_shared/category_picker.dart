@@ -35,7 +35,7 @@ class _CategoryPickerState extends State<CategoryPicker>
   }
 
   void handleCategoryCreation() async {
-    final r = await context.pushNamed(RouteNames.categoryCreation);
+    final r = await context.pushNamed(RouteNames.categorySpec);
     if (r == true) reloadPage();
   }
 

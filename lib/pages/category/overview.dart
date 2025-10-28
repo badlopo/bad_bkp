@@ -9,18 +9,18 @@ import 'package:bookkeeping/utils/tunnel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
-class CategoryHomePage extends StatefulWidget {
-  const CategoryHomePage({super.key});
+class CategoryOverviewPage extends StatefulWidget {
+  const CategoryOverviewPage({super.key});
 
   @override
-  State<CategoryHomePage> createState() => _CategoryHomePageState();
+  State<CategoryOverviewPage> createState() => _CategoryHomePageState();
 }
 
-class _CategoryHomePageState extends State<CategoryHomePage>
+class _CategoryHomePageState extends State<CategoryOverviewPage>
     with
         AutomaticKeepAliveClientMixin,
-        PaginatedQueryMixin<CategoryHomePage, CategoryWithCount>,
-        SingleTunnelListenerMixin<CategoryHomePage, Symbol> {
+        PaginatedQueryMixin<CategoryOverviewPage, CategoryWithCount>,
+        SingleTunnelListenerMixin<CategoryOverviewPage, Symbol> {
   @override
   bool get wantKeepAlive => true;
 

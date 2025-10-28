@@ -1,5 +1,5 @@
 import 'package:bookkeeping/constants/tunnel.dart';
-import 'package:bookkeeping/pages/category/category.dart';
+import 'package:bookkeeping/pages/category/overview.dart';
 import 'package:bookkeeping/pages/tag/tag.dart';
 import 'package:bookkeeping/utils/tunnel.dart';
 import 'package:flutter/cupertino.dart';
@@ -109,7 +109,7 @@ class _CustomsPageState extends State<CustomsPage> {
           onPageChanged: (v) => setState(() {
             tabIndex = v;
           }),
-          children: const [CategoryHomePage(), TagHomePage()],
+          children: const [CategoryOverviewPage(), TagHomePage()],
         ),
       ),
     );

@@ -611,7 +611,7 @@ class _TransactionSpecPageState extends State<TransactionSpecPage> {
     if (confirm != true) return;
 
     await ToastUtils.loadingWithTxn(() async {
-      await BKPDatabase.instance.deleteCategory(widget.current!.tx.id);
+      await BKPDatabase.instance.deleteTransaction(widget.current!.tx.id);
     });
 
     // ignore: use_build_context_synchronously
@@ -755,17 +755,18 @@ class _TransactionSpecPageState extends State<TransactionSpecPage> {
             ),
             _SnapshotSection(files: snapshotFiles),
             _TagSection(selectIds: tagIds),
-            Padding(
-              padding: EdgeInsets.fromLTRB(20, 32, 20, 0),
-              child: CupertinoButton.tinted(
-                color: CupertinoColors.destructiveRed,
-                onPressed: handleDeletion,
-                child: Text(
-                  'Delete',
-                  style: TextStyle(color: CupertinoColors.destructiveRed),
+            if (widget.current != null)
+              Padding(
+                padding: EdgeInsets.fromLTRB(20, 32, 20, 0),
+                child: CupertinoButton.tinted(
+                  color: CupertinoColors.destructiveRed,
+                  onPressed: handleDeletion,
+                  child: Text(
+                    'Delete',
+                    style: TextStyle(color: CupertinoColors.destructiveRed),
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),

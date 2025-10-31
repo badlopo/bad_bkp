@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -40,6 +41,14 @@ class BKPDatabase extends _$BKPDatabase {
 
   @override
   int get schemaVersion => 1;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(beforeOpen: (detail) async {
+      // enable foreign-key feature
+      await customStatement('PRAGMA foreign_keys = ON');
+    });
+  }
 
   BKPDatabase._() : super(_openConnection());
 }

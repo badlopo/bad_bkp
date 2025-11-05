@@ -90,7 +90,7 @@ class Tunnel {
 
 mixin SingleTunnelListenerMixin<T extends StatefulWidget, EventType>
     on State<T> {
-  StopListen? _unlistenTunnel;
+  late final StopListen _unlistenTunnel;
 
   /// The name of the tunnel to listen to.
   abstract final TunnelIdentifier tunnelName;
@@ -108,7 +108,38 @@ mixin SingleTunnelListenerMixin<T extends StatefulWidget, EventType>
 
   @override
   void dispose() {
-    _unlistenTunnel?.call();
+    _unlistenTunnel();
+    super.dispose();
+  }
+}
+
+class TunnelConfig<T> {
+  final Object tunnelName;
+  final void Function(T event) handler;
+
+  StopListen listen() => Tunnel(tunnelName).listen<T>(handler);
+
+  const TunnelConfig(this.tunnelName, this.handler);
+}
+
+mixin MultiTunnelListenerMixin<T extends StatefulWidget> on State<T> {
+  List<TunnelConfig> get tunnelConfigs;
+
+  late final Iterable<StopListen> _unlistenAll;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _unlistenAll = [for (final config in tunnelConfigs) config.listen()];
+  }
+
+  @override
+  void dispose() {
+    for (final fn in _unlistenAll) {
+      fn();
+    }
+
     super.dispose();
   }
 }

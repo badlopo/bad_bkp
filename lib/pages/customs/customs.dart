@@ -1,7 +1,6 @@
 import 'package:bookkeeping/constants/tunnel.dart';
 import 'package:bookkeeping/pages/category/overview.dart';
 import 'package:bookkeeping/pages/tag/tag.dart';
-import 'package:bookkeeping/utils/tunnel.dart';
 import 'package:flutter/cupertino.dart';
 
 const _animateDuration = Duration(milliseconds: 150);
@@ -80,9 +79,9 @@ class _CustomsPageState extends State<CustomsPage> {
   void handleTrailingAction() {
     switch (tabIndex) {
       case 0:
-        Tunnel(BKPTunnels.category).send(#create);
+        BKPTunnel.sendCustom(#category);
       case 1:
-        Tunnel(BKPTunnels.tag).send(#create);
+        BKPTunnel.sendCustom(#tag);
     }
   }
 

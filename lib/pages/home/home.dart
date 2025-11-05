@@ -1,5 +1,4 @@
 import 'package:bookkeeping/pages/customs/customs.dart';
-import 'package:bookkeeping/pages/dashboard/dashboard.dart';
 import 'package:bookkeeping/pages/setting/setting.dart';
 import 'package:bookkeeping/pages/transaction/overview.dart';
 import 'package:flutter/cupertino.dart';

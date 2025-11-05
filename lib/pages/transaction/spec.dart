@@ -5,6 +5,7 @@ import 'package:bookkeeping/components/indicator.dart';
 import 'package:bookkeeping/components/refreshable.dart';
 import 'package:bookkeeping/components/undraw.dart';
 import 'package:bookkeeping/constants/constraint.dart';
+import 'package:bookkeeping/constants/tunnel.dart';
 import 'package:bookkeeping/db/database.dart';
 import 'package:bookkeeping/extensions/datetime.dart';
 import 'package:bookkeeping/helpers/decimal_text_input_formatter.dart';
@@ -405,6 +406,8 @@ class _TagSectionState extends State<_TagSection> {
 
     final newTag = await BKPDatabase.instance.createTag(name);
     widget.selectIds.add(newTag.id);
+
+    BKPTunnel.sendRefresh(#tag);
 
     return handleResetFilter();
   }

@@ -20,17 +20,19 @@ class _CategoryHomePageState extends State<CategoryOverviewPage>
     with
         AutomaticKeepAliveClientMixin,
         PaginatedQueryMixin<CategoryOverviewPage, CategoryWithCount>,
-        SingleTunnelListenerMixin<CategoryOverviewPage, Symbol> {
+        MultiTunnelListenerMixin {
   @override
   bool get wantKeepAlive => true;
 
   @override
-  TunnelIdentifier get tunnelName => BKPTunnels.category;
-
-  @override
-  void onTunnelEvent(Symbol event) {
-    if (event == #create) handleCategoryCreation();
-  }
+  List<TunnelConfig> get tunnelConfigs => [
+        TunnelConfig<Symbol>(BKPTunnelName.custom, (Symbol ev) {
+          if (ev == #category) handleCategoryCreation();
+        }),
+        TunnelConfig<Symbol>(BKPTunnelName.refresh, (Symbol ev) {
+          if (ev == #category) reloadPage();
+        }),
+      ];
 
   final TextEditingController controller = TextEditingController();
 
@@ -43,14 +45,12 @@ class _CategoryHomePageState extends State<CategoryOverviewPage>
     );
   }
 
-  void handleCategoryCreation() async {
-    final r = await context.pushNamed(RouteNames.categorySpec);
-    if (r == true) reloadPage();
+  void handleCategoryCreation() {
+    context.pushNamed(RouteNames.categorySpec);
   }
 
-  void handleToCategoryDetail(CategoryWithCount d) async {
-    final r = await context.pushNamed(RouteNames.categorySpec, extra: d);
-    if (r == true) reloadPage();
+  void handleToCategoryDetail(CategoryWithCount d) {
+    context.pushNamed(RouteNames.categorySpec, extra: d);
   }
 
   @override

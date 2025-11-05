@@ -49,19 +49,19 @@ class TagHomePage extends StatefulWidget {
 }
 
 class _TagHomePageState extends State<TagHomePage>
-    with
-        AutomaticKeepAliveClientMixin,
-        SingleTunnelListenerMixin<TagHomePage, Symbol> {
+    with AutomaticKeepAliveClientMixin, MultiTunnelListenerMixin {
   @override
   bool get wantKeepAlive => true;
 
   @override
-  TunnelIdentifier get tunnelName => BKPTunnels.tag;
-
-  @override
-  void onTunnelEvent(Symbol event) {
-    if (event == #create) handleTagCreation();
-  }
+  List<TunnelConfig> get tunnelConfigs => [
+        TunnelConfig<Symbol>(BKPTunnelName.custom, (Symbol ev) {
+          if (ev == #tag) handleTagCreation();
+        }),
+        TunnelConfig<Symbol>(BKPTunnelName.refresh, (Symbol ev) {
+          if (ev == #tag) getTags();
+        }),
+      ];
 
   final TextEditingController controller = TextEditingController();
   String filter = '';
@@ -119,7 +119,7 @@ class _TagHomePageState extends State<TagHomePage>
       await BKPDatabase.instance.createTag(name);
     });
 
-    getTags();
+    BKPTunnel.sendRefresh(#tag);
   }
 
   void handleDeletion(TagWithCount tag) async {
@@ -150,18 +150,20 @@ class _TagHomePageState extends State<TagHomePage>
       await BKPDatabase.instance.deleteTag(tag.tag.id);
     });
 
-    await getTags();
+    BKPTunnel.sendRefresh(#tag);
   }
 
   void handleFilter(String s) async {
     filter = s;
-    await getTags();
+
+    BKPTunnel.sendRefresh(#tag);
   }
 
   void handleResetFilter() async {
     controller.clear();
     filter = '';
-    await getTags();
+
+    BKPTunnel.sendRefresh(#tag);
   }
 
   @override

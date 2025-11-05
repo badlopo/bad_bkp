@@ -2,6 +2,7 @@ import 'package:bookkeeping/components/palette.dart';
 import 'package:bookkeeping/constants/color.dart';
 import 'package:bookkeeping/constants/constraint.dart';
 import 'package:bookkeeping/constants/icon.dart';
+import 'package:bookkeeping/constants/tunnel.dart';
 import 'package:bookkeeping/db/database.dart';
 import 'package:bookkeeping/extensions/datetime.dart';
 import 'package:bookkeeping/route/route.dart';
@@ -68,10 +69,11 @@ class _CategorySpecPageState extends State<CategorySpecPage> {
           );
         }
       });
-    }
 
-    // ignore: use_build_context_synchronously
-    context.pop(true);
+      BKPTunnel.sendRefresh(#category);
+
+      if (mounted) context.pop();
+    }
   }
 
   void handleDeletion() async {
@@ -105,8 +107,9 @@ class _CategorySpecPageState extends State<CategorySpecPage> {
       await BKPDatabase.instance.deleteCategory(category.id);
     });
 
-    // ignore: use_build_context_synchronously
-    context.pop(true);
+    BKPTunnel.sendRefresh(#category);
+
+    if (mounted) context.pop();
   }
 
   @override

@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
     return ListenableBuilder(
       listenable: bkpTheme,
       builder: (context, child) => CupertinoApp.router(
-        title: 'BKP',
+        title: '我花钱了吗',
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,

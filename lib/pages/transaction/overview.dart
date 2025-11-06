@@ -94,7 +94,6 @@ class _TransactionOverviewPageState extends State<TransactionOverviewPage>
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text('$ym'),
-        // TODO: show statistic
         if (statistic != null) Text(_formatAmount(statistic.total)),
       ],
     );

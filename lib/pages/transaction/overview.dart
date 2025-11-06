@@ -1,10 +1,12 @@
 import 'package:bookkeeping/components/indicator.dart';
 import 'package:bookkeeping/components/refreshable.dart';
+import 'package:bookkeeping/constants/tunnel.dart';
 import 'package:bookkeeping/db/database.dart';
 import 'package:bookkeeping/extensions/datetime.dart';
 import 'package:bookkeeping/helpers/year_month.dart';
 import 'package:bookkeeping/mixins/pagination.dart';
 import 'package:bookkeeping/route/route.dart';
+import 'package:bookkeeping/utils/tunnel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -33,7 +35,16 @@ class TransactionOverviewPage extends StatefulWidget {
 class _TransactionOverviewPageState extends State<TransactionOverviewPage>
     with
         PaginatedQueryMixin<TransactionOverviewPage,
-            TransactionWithCategoryAndTags> {
+            TransactionWithCategoryAndTags>,
+        SingleTunnelListenerMixin<TransactionOverviewPage, Symbol> {
+  @override
+  TunnelIdentifier get tunnelName => BKPTunnelName.refresh;
+
+  @override
+  void onTunnelEvent(Symbol event) {
+    if (event == #transaction) reloadPage();
+  }
+
   final Map<YearMonth, TxStatistic> _monthlyStatistic = {};
 
   Future<void> _getMonthlyStatistic() async {
@@ -69,14 +80,12 @@ class _TransactionOverviewPageState extends State<TransactionOverviewPage>
     await _getMonthlyStatistic();
   }
 
-  Future<void> handleTransactionCreation() async {
-    final r = await context.pushNamed(RouteNames.transactionSpec);
-    if (r == true) reloadPage();
+  void handleTransactionCreation() {
+    context.pushNamed(RouteNames.transactionSpec);
   }
 
-  void handleToTransactionDetail(TransactionWithCategoryAndTags d) async {
-    final r = await context.pushNamed(RouteNames.transactionSpec, extra: d);
-    if (r == true) reloadPage();
+  void handleToTransactionDetail(TransactionWithCategoryAndTags d) {
+    context.pushNamed(RouteNames.transactionSpec, extra: d);
   }
 
   Widget _buildGroupHeader(YearMonth ym) {

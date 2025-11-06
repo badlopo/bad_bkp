@@ -18,8 +18,6 @@ abstract class RouteNames {
   /// - `extra`: `CategoryWithCount?`
   ///   - [CategoryWithCount]: 编辑类别
   ///   - `null`: 新建类别
-  ///
-  /// Returns: `bool` 是否有变更行为 (新建、修改、删除)
   static const categorySpec = '/category/spec';
 
   /// 交易详情
@@ -28,8 +26,6 @@ abstract class RouteNames {
   /// - `extra`: `TransactionWithCategoryAndTags?`
   ///   - [TransactionWithCategoryAndTags]: 编辑交易
   ///   - `null`: 新建交易
-  ///
-  /// Returns: `bool` 是否有变更行为 (新建、修改、删除)
   static const transactionSpec = '/transaction/spec';
 
   /// 存储管理
@@ -39,6 +35,8 @@ abstract class RouteNames {
   ///
   /// Parameters:
   /// - `extra`: `Color?` 图标使用的颜色
+  ///
+  /// Returns: `BKPIcon?` 选择的图标
   static const iconPicker = '/misc/icon-picker';
 }
 

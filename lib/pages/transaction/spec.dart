@@ -14,6 +14,7 @@ import 'package:bookkeeping/route/route.dart';
 import 'package:bookkeeping/utils/image.dart';
 import 'package:bookkeeping/utils/storage.dart';
 import 'package:bookkeeping/utils/toast.dart';
+import 'package:bookkeeping/utils/tunnel.dart';
 import 'package:cupertino_calendar_picker/cupertino_calendar_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,17 @@ class CategoryPicker extends StatefulWidget {
 }
 
 class _CategoryPickerState extends State<CategoryPicker>
-    with PaginatedQueryMixin<CategoryPicker, Category> {
+    with
+        PaginatedQueryMixin<CategoryPicker, Category>,
+        SingleTunnelListenerMixin<CategoryPicker, Symbol> {
+  @override
+  TunnelIdentifier get tunnelName => BKPTunnelName.refresh;
+
+  @override
+  void onTunnelEvent(Symbol event) {
+    if (event == #category) reloadPage();
+  }
+
   final TextEditingController controller = TextEditingController();
 
   @override
@@ -48,9 +59,8 @@ class _CategoryPickerState extends State<CategoryPicker>
     );
   }
 
-  void handleCategoryCreation() async {
-    final r = await context.pushNamed(RouteNames.categorySpec);
-    if (r == true) reloadPage();
+  void handleCategoryCreation() {
+    context.pushNamed(RouteNames.categorySpec);
   }
 
   @override
@@ -597,8 +607,9 @@ class _TransactionSpecPageState extends State<TransactionSpecPage> {
         }
       });
 
-      // ignore: use_build_context_synchronously
-      context.pop(true);
+      BKPTunnel.sendRefresh(#transaction);
+
+      if (mounted) context.pop();
     }
   }
 
@@ -629,8 +640,9 @@ class _TransactionSpecPageState extends State<TransactionSpecPage> {
       await BKPDatabase.instance.deleteTransaction(widget.current!.tx.id);
     });
 
-    // ignore: use_build_context_synchronously
-    context.pop(true);
+    BKPTunnel.sendRefresh(#transaction);
+
+    if (mounted) context.pop();
   }
 
   @override
